@@ -158,9 +158,8 @@ detalle por campo) y `503` (MySQL apagado).
 
 ## Integrantes
 
-| Nombre | Rol |
-| --- | --- |
-| _Nombre Apellido_ | _Rol_ |
-| _Nombre Apellido_ | _Rol_ |
+- Lizeth Adela Rodríguez Padilla
 
-**Docente:** _Nombre del docente_ · **Materia:** Diseño Web 2 · **Universidad Privada Domingo Savio (UPDS)** · 2026
+**Docente:** Ing. Pablo Moscoso Zeballos · **Materia:** Diseño Web II · **Universidad Privada Domingo Savio (UPDS)** · 2026
+
+El informe (APA 7), la presentación y las capturas de pantalla están en la carpeta [`informe/`](informe/).
