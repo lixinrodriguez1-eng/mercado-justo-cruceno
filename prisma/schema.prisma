@@ -1,0 +1,85 @@
+// =============================================================
+// Esquema de base de datos - Café Chiquitano
+// SGBD: MySQL / MariaDB (XAMPP) - base de datos "cafeteria_db"
+// =============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Estados posibles de un pedido (flujo: PENDIENTE -> PREPARANDO -> ENTREGADO)
+enum EstadoPedido {
+  PENDIENTE
+  PREPARANDO
+  ENTREGADO
+}
+
+// Categorías del menú: Cafés, Postres, Salados
+model Categoria {
+  id        Int        @id @default(autoincrement())
+  nombre    String     @unique @db.VarChar(60)
+  slug      String     @unique @db.VarChar(60) // versión para URL: "cafes", "postres"...
+  productos Producto[]
+
+  @@map("categorias")
+}
+
+// Productos que vende la cafetería
+model Producto {
+  id            Int             @id @default(autoincrement())
+  nombre        String          @db.VarChar(100)
+  descripcion   String          @db.Text
+  precio        Decimal         @db.Decimal(10, 2) // Decimal evita errores de redondeo con dinero
+  imagen        String          @db.VarChar(500)   // URL de la imagen (Unsplash o /public)
+  disponible    Boolean         @default(true)     // si es false, no se puede pedir
+  destacado     Boolean         @default(false)    // se muestra en la página de inicio
+  categoriaId   Int
+  categoria     Categoria       @relation(fields: [categoriaId], references: [id])
+  detalles      DetallePedido[]
+  creadoEn      DateTime        @default(now())
+  actualizadoEn DateTime        @updatedAt
+
+  @@index([categoriaId])
+  @@map("productos")
+}
+
+// Pedido realizado por un cliente desde la web
+model Pedido {
+  id       Int             @id @default(autoincrement())
+  // Código aleatorio para la URL de confirmación: así nadie puede
+  // ver pedidos ajenos cambiando un número en la dirección.
+  codigo   String          @unique @default(cuid()) @db.VarChar(30)
+  cliente  String          @db.VarChar(100)
+  telefono String          @db.VarChar(20)
+  nota     String?         @db.VarChar(255) // indicaciones opcionales ("sin azúcar")
+  total    Decimal         @db.Decimal(10, 2)
+  estado   EstadoPedido    @default(PENDIENTE)
+  fecha    DateTime        @default(now())
+  detalles DetallePedido[]
+
+  @@index([estado])
+  @@map("pedidos")
+}
+
+// Cada línea del pedido (producto + cantidad)
+model DetallePedido {
+  id             Int       @id @default(autoincrement())
+  pedidoId       Int
+  pedido         Pedido    @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  // Si el producto se elimina del menú, el historial del pedido se conserva
+  productoId     Int?
+  producto       Producto? @relation(fields: [productoId], references: [id], onDelete: SetNull)
+  nombreProducto String    @db.VarChar(100)    // copia del nombre al momento de comprar
+  precioUnitario Decimal   @db.Decimal(10, 2)  // copia del precio al momento de comprar
+  cantidad       Int
+  subtotal       Decimal   @db.Decimal(10, 2)
+
+  @@index([pedidoId])
+  @@index([productoId])
+  @@map("detalle_pedidos")
+}
