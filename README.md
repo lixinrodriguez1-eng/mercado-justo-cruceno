@@ -158,6 +158,7 @@ detalle por campo) y `503` (MySQL apagado).
 
 ## Integrantes
 
+- Ismael Franco Ruíz
 - Lizeth Adela Rodríguez Padilla
 
 **Docente:** Ing. Pablo Moscoso Zeballos · **Materia:** Diseño Web II · **Universidad Privada Domingo Savio (UPDS)** · 2026
