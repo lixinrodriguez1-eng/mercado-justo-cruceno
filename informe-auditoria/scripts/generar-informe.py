@@ -68,7 +68,8 @@ def _entorno():
         lh = r["lighthouseVersion"]
         m = re.search(r"Chrome/(\d+)", r["environment"]["hostUserAgent"])
         chrome = m.group(1) if m else chrome
-    return round(min(bench)), round(max(bench)), lh, chrome
+    redondear = lambda x: int(x + 0.5)  # 2084,5 → 2085 (round() de Python redondea al par)
+    return redondear(min(bench)), redondear(max(bench)), lh, chrome
 BENCH_MIN, BENCH_MAX, LH_VER, CHROME_VER = _entorno()
 # Productos disponibles antes/después de los ataques (de la salida real del script)
 _ataques = (RES / "prueba-ataques.txt").read_text(encoding="utf-8")
