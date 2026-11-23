@@ -9,7 +9,7 @@
 // Además sincroniza el carrito entre pestañas abiertas.
 // =============================================================
 import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
-import type { ItemCarrito, ProductoDTO } from "@/lib/tipos";
+import type { ItemCarrito, ProductoCarrito } from "@/lib/tipos";
 
 const CLAVE_STORAGE = "cafe-chiquitano:carrito";
 export const MAX_POR_PRODUCTO = 20; // mismo límite que valida el servidor
@@ -73,7 +73,7 @@ function modificar(cambio: (items: ItemCarrito[]) => ItemCarrito[]) {
 
 // ---------- Acciones ----------
 const acciones = {
-  agregar(producto: ProductoDTO) {
+  agregar(producto: ProductoCarrito) {
     modificar((items) => {
       const existente = items.find((i) => i.productoId === producto.id);
       if (existente)

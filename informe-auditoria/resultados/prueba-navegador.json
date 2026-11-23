@@ -1,0 +1,29 @@
+{
+  "dialogos": [],
+  "erroresConsola": [
+    "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "Loading the script 'https://atacante.example/robar-cookies.js' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.",
+    "Connecting to 'https://atacante.example/robar?datos=' violates the following Content Security Policy directive: \"connect-src 'self'\". The action has been blocked.",
+    "Fetch API cannot load https://atacante.example/robar?datos=. Refused to connect because it violates the document's Content Security Policy.",
+    "Framing 'https://atacante.example/' violates the following Content Security Policy directive: \"default-src 'self'\". The request has been blocked. Note that 'frame-src' was not explicitly set, so 'default-src' is used as a fallback.\n",
+    "Loading plugin data from 'https://atacante.example/plugin.swf' violates the following Content Security Policy directive: \"object-src 'none'\". The action has been blocked.",
+    "Framing 'http://localhost:3005/' violates the following Content Security Policy directive: \"frame-ancestors 'none'\". The request has been blocked.\n",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "violacionesCSP": [],
+  "pasos": [
+    "A /: 5 imágenes (0 rotas), fuentes cargadas: Fraunces, Nunito Sans, violaciones CSP: 0",
+    "A /menu: 13 imágenes (0 rotas), fuentes cargadas: Fraunces, Nunito Sans, violaciones CSP: 0",
+    "A /carrito: 0 imágenes (0 rotas), fuentes cargadas: Fraunces, Nunito Sans, violaciones CSP: 0",
+    "A /admin/login: 0 imágenes (0 rotas), fuentes cargadas: Fraunces, Nunito Sans, Nunito Sans Fallback, violaciones CSP: 0",
+    "B Pedido enviado → /pedido/cmwscgi960003tc4cuqs6x3j9; alert() ejecutados: 0",
+    "B Texto mostrado contiene \"<script\": false, contiene \"onerror\": false",
+    "C next/dynamic: al abrir \"Nuevo producto\" se descargó el chunk 2jiutvizv0usy.js",
+    "C Aviso del panel: “Mocha XSS” se creó correctamente.; alert() ejecutados: 0",
+    "D Intentos bloqueados por la CSP: script-src-elem → https://atacante.example/robar-cookies.js | connect-src → https://atacante.example/robar?datos= | frame-src → https://atacante.example | object-src → https://atacante.example"
+  ],
+  "alertsEjecutados": 0
+}

@@ -1,0 +1,36 @@
+→ corrida 1/3 · / · s3/antes
+→ corrida 1/3 · / · s3/despues
+→ corrida 1/3 · /menu · s3/antes
+→ corrida 1/3 · /menu · s3/despues
+→ corrida 1/3 · /carrito · s3/antes
+→ corrida 1/3 · /carrito · s3/despues
+→ corrida 2/3 · / · s3/antes
+→ corrida 2/3 · / · s3/despues
+→ corrida 2/3 · /menu · s3/antes
+→ corrida 2/3 · /menu · s3/despues
+→ corrida 2/3 · /carrito · s3/antes
+→ corrida 2/3 · /carrito · s3/despues
+→ corrida 3/3 · / · s3/antes
+→ corrida 3/3 · / · s3/despues
+→ corrida 3/3 · /menu · s3/antes
+→ corrida 3/3 · /menu · s3/despues
+→ corrida 3/3 · /carrito · s3/antes
+→ corrida 3/3 · /carrito · s3/despues
+
+=== s3/antes (medianas de 3 corridas) ===
+┌─────────┬──────┬────────┬────────┬────────┬─────────┬────────┬─────┬─────┬─────────┐
+│ (index) │ Perf │ FCP s  │ LCP s  │ TBT ms │ CLS     │ SI s   │ KB  │ Req │ HTML KB │
+├─────────┼──────┼────────┼────────┼────────┼─────────┼────────┼─────┼─────┼─────────┤
+│ inicio  │ 75   │ '1.82' │ '6.84' │ 98     │ '0.000' │ '1.82' │ 354 │ 24  │ 84      │
+│ menu    │ 74   │ '1.83' │ '6.92' │ 132    │ '0.000' │ '1.83' │ 393 │ 27  │ 85      │
+│ carrito │ 81   │ '1.52' │ '5.01' │ 89     │ '0.006' │ '1.52' │ 248 │ 20  │ 17      │
+└─────────┴──────┴────────┴────────┴────────┴─────────┴────────┴─────┴─────┴─────────┘
+
+=== s3/despues (medianas de 3 corridas) ===
+┌─────────┬──────┬────────┬────────┬────────┬─────────┬────────┬─────┬─────┬─────────┐
+│ (index) │ Perf │ FCP s  │ LCP s  │ TBT ms │ CLS     │ SI s   │ KB  │ Req │ HTML KB │
+├─────────┼──────┼────────┼────────┼────────┼─────────┼────────┼─────┼─────┼─────────┤
+│ inicio  │ 74   │ '1.83' │ '6.71' │ 114    │ '0.000' │ '1.83' │ 343 │ 24  │ 80      │
+│ menu    │ 72   │ '1.83' │ '6.96' │ 198    │ '0.000' │ '1.83' │ 369 │ 27  │ 79      │
+│ carrito │ 80   │ '1.52' │ '5.01' │ 143    │ '0.006' │ '1.52' │ 252 │ 20  │ 17      │
+└─────────┴──────┴────────┴────────┴────────┴─────────┴────────┴─────┴─────┴─────────┘

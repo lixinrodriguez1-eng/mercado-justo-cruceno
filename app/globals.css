@@ -1,4 +1,11 @@
-@import "tailwindcss";
+/* WPO: por defecto Tailwind 4 busca clases en TODOS los archivos del
+   proyecto. Los informes HTML de Lighthouse (informe-auditoria/) traen
+   cientos de clases ajenas que inflaban el CSS final (+3,8 KB). Con
+   source(none) solo se escanean las carpetas del código de la app. */
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
+@source "../lib";
 
 /* =============================================================
    Sistema de diseño - Café Chiquitano

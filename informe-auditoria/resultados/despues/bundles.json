@@ -1,0 +1,57 @@
+{
+  "build": {
+    "jsKB": 701.1,
+    "jsGzipKB": 226.7,
+    "jsArchivos": 23,
+    "cssKB": 44.4,
+    "cssGzipKB": 8.6,
+    "cssArchivos": 1
+  },
+  "porRuta": {
+    "/": {
+      "htmlKB": 80.2,
+      "htmlGzipKB": 10.7,
+      "jsKB": 589.5,
+      "jsGzipKB": 183.8,
+      "cssKB": 44.4,
+      "cssGzipKB": 8.6,
+      "archivos": 11
+    },
+    "/menu": {
+      "htmlKB": 78.8,
+      "htmlGzipKB": 10.1,
+      "jsKB": 593,
+      "jsGzipKB": 185,
+      "cssKB": 44.4,
+      "cssGzipKB": 8.6,
+      "archivos": 11
+    },
+    "/carrito": {
+      "htmlKB": 16.8,
+      "htmlGzipKB": 4.1,
+      "jsKB": 595.1,
+      "jsGzipKB": 185.6,
+      "cssKB": 44.4,
+      "cssGzipKB": 8.6,
+      "archivos": 11
+    },
+    "/admin": {
+      "htmlKB": 84.7,
+      "htmlGzipKB": 8.9,
+      "jsKB": 606.4,
+      "jsGzipKB": 189.6,
+      "cssKB": 44.4,
+      "cssGzipKB": 8.6,
+      "archivos": 13
+    },
+    "/admin/pedidos": {
+      "htmlKB": 44.6,
+      "htmlGzipKB": 6.7,
+      "jsKB": 583.9,
+      "jsGzipKB": 182,
+      "cssKB": 44.4,
+      "cssGzipKB": 8.6,
+      "archivos": 12
+    }
+  }
+}

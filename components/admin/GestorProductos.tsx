@@ -5,6 +5,7 @@
 // - Disponible / Destacado: interruptores con PATCH inmediato
 // - Eliminar: confirmación en modal (DELETE)
 // =============================================================
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { pedirApi } from "@/lib/cliente-api";
 import { formatearPrecio } from "@/lib/negocio";
@@ -12,7 +13,6 @@ import type { CategoriaDTO, ProductoDTO } from "@/lib/tipos";
 import { IconoBasura, IconoBuscar, IconoEditar, IconoMas } from "../Iconos";
 import { ImagenProducto } from "../ImagenProducto";
 import { Dialogo } from "./Dialogo";
-import { FormularioProducto } from "./FormularioProducto";
 import { Interruptor } from "./Interruptor";
 
 interface Props {
@@ -21,6 +21,14 @@ interface Props {
 }
 
 type Aviso = { tipo: "ok" | "error"; texto: string } | null;
+
+// WPO – lazy loading con next/dynamic: el formulario (con su validación y
+// vista previa de imagen) va en un chunk aparte que solo se descarga cuando
+// el administrador abre "Nuevo producto" o "Editar". La lista carga antes.
+const FormularioProducto = dynamic(
+  () => import("./FormularioProducto").then((m) => m.FormularioProducto),
+  { loading: () => <p className="p-4 text-center text-cafe-600">Cargando formulario…</p> },
+);
 
 export function GestorProductos({ productosIniciales, categorias }: Props) {
   const [productos, setProductos] = useState(productosIniciales);

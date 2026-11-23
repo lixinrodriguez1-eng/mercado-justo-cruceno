@@ -2,21 +2,24 @@
 import type { ProductoDTO } from "@/lib/tipos";
 import { formatearPrecio } from "@/lib/negocio";
 import { ImagenProducto } from "./ImagenProducto";
+import type { ComponentProps } from "react";
 import { BotonAgregar } from "./carrito/BotonAgregar";
 
 interface Props {
   producto: ProductoDTO;
-  preload?: boolean; // true en las primeras tarjetas visibles (mejora el LCP)
+  // WPO: "alta" solo en la primera tarjeta visible (probable LCP);
+  // el resto se carga en diferido (lazy loading).
+  prioridad?: ComponentProps<typeof ImagenProducto>["prioridad"];
 }
 
-export function TarjetaProducto({ producto, preload = false }: Props) {
+export function TarjetaProducto({ producto, prioridad = "diferida" }: Props) {
   return (
     <article className="tarjeta group flex flex-col overflow-hidden transition-shadow duration-200 hover:shadow-elevada">
       <div className="relative aspect-[4/3] overflow-hidden bg-crema-200">
         <ImagenProducto
           src={producto.imagen}
           alt={producto.nombre}
-          preload={preload}
+          prioridad={prioridad}
           sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 92vw"
           className="transition-transform duration-200 motion-safe:group-hover:scale-105"
         />
@@ -31,7 +34,10 @@ export function TarjetaProducto({ producto, preload = false }: Props) {
           <p className="shrink-0 font-extrabold text-acento-600">{formatearPrecio(producto.precio)}</p>
         </div>
         <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-cafe-600">{producto.descripcion}</p>
-        <BotonAgregar producto={producto} />
+        {/* WPO: al componente cliente solo le pasamos lo que usa */}
+        <BotonAgregar
+          producto={{ id: producto.id, nombre: producto.nombre, precio: producto.precio, imagen: producto.imagen }}
+        />
       </div>
     </article>
   );

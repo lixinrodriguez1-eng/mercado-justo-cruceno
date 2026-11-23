@@ -1,0 +1,28 @@
+=== 1. XSS en el formulario de pedido (POST /api/pedidos) ===
+Enviado  cliente="<script>alert(1)</script>"  nota="intento 1"
+  → 422 rechazado: {"cliente":"Ingresa tu nombre (entre 2 y 100 caracteres)."}
+Enviado  cliente="<img src=x onerror=alert(1)>Prueba XSS"  nota="<script>alert('xss')</script>Sin azúcar"
+  → 201 guardado como cliente="Prueba XSS" nota="Sin azúcar"  (id 13)
+Enviado  cliente="Prueba XSS Dos"  nota="<img src=x onerror=alert(document.cookie)>Para llevar"
+  → 201 guardado como cliente="Prueba XSS Dos" nota="Para llevar"  (id 14)
+Enviado  cliente="Prueba XSS Tres"  nota="&lt;svg onload=alert(1)&gt; leche deslactosada"
+  → 201 guardado como cliente="Prueba XSS Tres" nota="leche deslactosada"  (id 15)
+
+=== 2. XSS en el panel admin (POST /api/admin/productos) ===
+Login admin: 200
+  → 201 nombre="Prueba XSS Mocha" descripcion="Mocha de prueba para la auditoría OWASP" (id 18)
+  imagen=javascript:alert(1) → 422 {"nombre":"El nombre debe tener entre 2 y 100 caracteres.","imagen":"La imagen debe ser una URL https:// o una ruta que empiece con /."}
+
+=== 3. Inyección SQL ===
+Productos disponibles (sin filtro): 13
+  búsqueda q="' OR '1'='1"                      → 200, 0 resultados
+  búsqueda q="%' OR 1=1 -- "                    → 200, 0 resultados
+  búsqueda q="'; DROP TABLE productos; -- "     → 200, 0 resultados
+  búsqueda q="latte"                            → 200, 1 resultados
+  /api/productos/1 OR 1=1               → 400 "Id de producto inválido."
+  /api/productos/1;DROP TABLE pedidos   → 400 "Id de producto inválido."
+  login con password=' OR '1'='1 → 401 "Contraseña incorrecta."
+Productos después de los ataques: 13 (la tabla sigue intacta)
+
+Códigos de pedido creados: cmwscdoxf0000tc4czccnud43, cmwscdoyl0001tc4cclj1w2xd, cmwscdozu0002tc4cp6du5k07
+Id del producto de prueba: 18

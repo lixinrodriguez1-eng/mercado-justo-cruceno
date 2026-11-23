@@ -45,6 +45,11 @@ export interface PedidoDTO {
   detalles: DetallePedidoDTO[];
 }
 
+// WPO: datos mínimos que necesita el botón "Agregar" (componente cliente).
+// Enviar solo estos 4 campos, y no el producto completo con su descripción,
+// reduce el payload RSC que viaja dentro del HTML de cada página.
+export type ProductoCarrito = Pick<ProductoDTO, "id" | "nombre" | "precio" | "imagen">;
+
 // Ítem del carrito (vive en el navegador, NO es la base de datos)
 export interface ItemCarrito {
   productoId: number;

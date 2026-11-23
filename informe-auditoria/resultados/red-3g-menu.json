@@ -1,0 +1,412 @@
+{
+  "antes": {
+    "mediana": {
+      "url": "http://localhost:3006/menu",
+      "tiempos": {
+        "fcp": 2576,
+        "lcp": 2576,
+        "load": 5842.5
+      },
+      "totalKB": 367.50390625,
+      "peticiones": [
+        {
+          "nombre": "menu",
+          "tipo": "Document",
+          "kb": 17.2880859375,
+          "inicio": 0,
+          "fin": 508.7530000018887
+        },
+        {
+          "nombre": "0069d14c43d1997c-s.p.380f-mwhk0aej.woff2",
+          "tipo": "Font",
+          "kb": 30.515625,
+          "inicio": 363.9100000145845,
+          "fin": 2284.603000007337
+        },
+        {
+          "nombre": "edb99fec956915f8-s.p.32sris142tqlb.woff2",
+          "tipo": "Font",
+          "kb": 35.99609375,
+          "inicio": 367.2210000222549,
+          "fin": 2548.414999997476
+        },
+        {
+          "nombre": "3pmsmb0a4cton.css",
+          "tipo": "Stylesheet",
+          "kb": 8.94140625,
+          "inicio": 434.46400001994334,
+          "fin": 1330.608000018401
+        },
+        {
+          "nombre": "3be5ypa669k_3.js",
+          "tipo": "Script",
+          "kb": 4.0390625,
+          "inicio": 435.2900000230875,
+          "fin": 1093.3420000073966
+        },
+        {
+          "nombre": "44bax-4eob5k0.js",
+          "tipo": "Script",
+          "kb": 7.7705078125,
+          "inicio": 435.92099999659695,
+          "fin": 1849.7300000162795
+        },
+        {
+          "nombre": "3_hbnedeqc5a0.js",
+          "tipo": "Script",
+          "kb": 70.4521484375,
+          "inicio": 436.32599999546073,
+          "fin": 4529.389000002993
+        },
+        {
+          "nombre": "1kkzv4od91vka.js",
+          "tipo": "Script",
+          "kb": 44.6416015625,
+          "inicio": 437.5620000064373,
+          "fin": 3927.9439999954775
+        },
+        {
+          "nombre": "turbopack-2u1d16houkiyo.js",
+          "tipo": "Script",
+          "kb": 4.2001953125,
+          "inicio": 441.1930000060238,
+          "fin": 2400.6119999976363
+        },
+        {
+          "nombre": "0wj0noag-9_fs.js",
+          "tipo": "Script",
+          "kb": 3.90625,
+          "inicio": 443.0569999967702,
+          "fin": 2664.9190000025555
+        },
+        {
+          "nombre": "1_g85i1elopby.js",
+          "tipo": "Script",
+          "kb": 1.0703125,
+          "inicio": 443.89399999636225,
+          "fin": 2650.389999995241
+        },
+        {
+          "nombre": "23lnhzma8ef_3.js",
+          "tipo": "Script",
+          "kb": 5.80078125,
+          "inicio": 446.14899999578483,
+          "fin": 2883.934000012232
+        },
+        {
+          "nombre": "2cdwu16ruolrk.js",
+          "tipo": "Script",
+          "kb": 8.109375,
+          "inicio": 446.5360000031069,
+          "fin": 3318.2700000179466
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 8.9638671875,
+          "inicio": 446.95100001990795,
+          "fin": 1343.2100000209175
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 24.5126953125,
+          "inicio": 447.3430000070948,
+          "fin": 2167.0910000102594
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 26.3056640625,
+          "inicio": 2539.756000012858,
+          "fin": 4274.606999999378
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 7.5380859375,
+          "inicio": 2542.230999999447,
+          "fin": 3488.3740000077523
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 24.1357421875,
+          "inicio": 2548.3900000108406,
+          "fin": 4366.307000018423
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 8.357421875,
+          "inicio": 2550.676000013482,
+          "fin": 4073.7390000140294
+        },
+        {
+          "nombre": "icon.svg",
+          "tipo": "Other",
+          "kb": 0.6171875,
+          "inicio": 5905.09800001746,
+          "fin": 6231.121000018902
+        },
+        {
+          "nombre": "/",
+          "tipo": "Fetch",
+          "kb": 0.6796875,
+          "inicio": 6639.859999995679,
+          "fin": 6969.503000000259
+        },
+        {
+          "nombre": "carrito",
+          "tipo": "Fetch",
+          "kb": 0.6904296875,
+          "inicio": 6663.860000000568,
+          "fin": 7048.9959999977145
+        },
+        {
+          "nombre": "/",
+          "tipo": "Fetch",
+          "kb": 4.63671875,
+          "inicio": 6978.274000022793,
+          "fin": 7365.756000013789
+        },
+        {
+          "nombre": "carrito",
+          "tipo": "Fetch",
+          "kb": 2.6552734375,
+          "inicio": 7113.749000011012,
+          "fin": 7461.134000011953
+        },
+        {
+          "nombre": "31ts454u_sywx.js",
+          "tipo": "Script",
+          "kb": 6.9541015625,
+          "inicio": 7369.055999995908,
+          "fin": 7762.577000015881
+        },
+        {
+          "nombre": "3_-eyu95nqx9x.js",
+          "tipo": "Script",
+          "kb": 8.7255859375,
+          "inicio": 7464.972000016132,
+          "fin": 7873.944000020856
+        }
+      ]
+    },
+    "lcps": [
+      2416,
+      2576,
+      2796
+    ],
+    "fcps": [
+      2416,
+      2576,
+      2796
+    ]
+  },
+  "despues": {
+    "mediana": {
+      "url": "http://localhost:3005/menu",
+      "tiempos": {
+        "fcp": 2488,
+        "lcp": 2488,
+        "load": 4650.4000000059605
+      },
+      "totalKB": 348.923828125,
+      "peticiones": [
+        {
+          "nombre": "menu",
+          "tipo": "Document",
+          "kb": 17.6220703125,
+          "inicio": 0,
+          "fin": 494.4590000086464
+        },
+        {
+          "nombre": "0069d14c43d1997c-s.p.380f-mwhk0aej.woff2",
+          "tipo": "Font",
+          "kb": 30.5478515625,
+          "inicio": 380.91000000713393,
+          "fin": 2285.5020000133663
+        },
+        {
+          "nombre": "edb99fec956915f8-s.p.32sris142tqlb.woff2",
+          "tipo": "Font",
+          "kb": 36.0283203125,
+          "inicio": 384.2360000126064,
+          "fin": 2568.250000011176
+        },
+        {
+          "nombre": "3pmsmb0a4cton.css",
+          "tipo": "Stylesheet",
+          "kb": 8.9736328125,
+          "inicio": 416.14600000320934,
+          "fin": 1297.3179999971762
+        },
+        {
+          "nombre": "3be5ypa669k_3.js",
+          "tipo": "Script",
+          "kb": 4.0712890625,
+          "inicio": 417.1830000123009,
+          "fin": 1086.7819999984931
+        },
+        {
+          "nombre": "44bax-4eob5k0.js",
+          "tipo": "Script",
+          "kb": 7.802734375,
+          "inicio": 417.75600000983104,
+          "fin": 1869.4670000113547
+        },
+        {
+          "nombre": "3_hbnedeqc5a0.js",
+          "tipo": "Script",
+          "kb": 70.484375,
+          "inicio": 417.9780000122264,
+          "fin": 4294.228000013391
+        },
+        {
+          "nombre": "1kkzv4od91vka.js",
+          "tipo": "Script",
+          "kb": 44.673828125,
+          "inicio": 418.18900001817383,
+          "fin": 3880.747999995947
+        },
+        {
+          "nombre": "turbopack-2u1d16houkiyo.js",
+          "tipo": "Script",
+          "kb": 4.232421875,
+          "inicio": 418.3999999950174,
+          "fin": 2309.8250000039116
+        },
+        {
+          "nombre": "0wj0noag-9_fs.js",
+          "tipo": "Script",
+          "kb": 3.9384765625,
+          "inicio": 418.9769999939017,
+          "fin": 2439.383999997517
+        },
+        {
+          "nombre": "1_g85i1elopby.js",
+          "tipo": "Script",
+          "kb": 1.1025390625,
+          "inicio": 419.1949999949429,
+          "fin": 2626.6000000177883
+        },
+        {
+          "nombre": "23lnhzma8ef_3.js",
+          "tipo": "Script",
+          "kb": 5.8330078125,
+          "inicio": 419.41299999598414,
+          "fin": 2835.140000010142
+        },
+        {
+          "nombre": "0pchndf1gwsdz.js",
+          "tipo": "Script",
+          "kb": 8.2099609375,
+          "inicio": 419.6200000005774,
+          "fin": 3192.8290000068955
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 7.1806640625,
+          "inicio": 422.24300000816584,
+          "fin": 1167.0230000163428
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 18.1572265625,
+          "inicio": 422.87300000316463,
+          "fin": 1752.6030000008177
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 20.0107421875,
+          "inicio": 2456.170999997994,
+          "fin": 3962.0400000130758
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 6.2109375,
+          "inicio": 2457.2120000084396,
+          "fin": 3355.3759999922477
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 19.103515625,
+          "inicio": 2458.2290000107605,
+          "fin": 4098.170000012033
+        },
+        {
+          "nombre": "image (750w)",
+          "tipo": "Image",
+          "kb": 6.9541015625,
+          "inicio": 2459.048000018811,
+          "fin": 3897.3899999982677
+        },
+        {
+          "nombre": "icon.svg",
+          "tipo": "Other",
+          "kb": 1.1611328125,
+          "inicio": 4706.296000018483,
+          "fin": 5074.813000013819
+        },
+        {
+          "nombre": "/",
+          "tipo": "Fetch",
+          "kb": 1.224609375,
+          "inicio": 5833.249000017531,
+          "fin": 6169.999000005191
+        },
+        {
+          "nombre": "carrito",
+          "tipo": "Fetch",
+          "kb": 1.236328125,
+          "inicio": 5837.557999999262,
+          "fin": 6185.813000018243
+        },
+        {
+          "nombre": "/",
+          "tipo": "Fetch",
+          "kb": 5.1796875,
+          "inicio": 6241.511000000173,
+          "fin": 6676.470000005793
+        },
+        {
+          "nombre": "carrito",
+          "tipo": "Fetch",
+          "kb": 3.197265625,
+          "inicio": 6277.774000016507,
+          "fin": 6660.68699999596
+        },
+        {
+          "nombre": "3t5l5a6hzv8sb.js",
+          "tipo": "Script",
+          "kb": 8.79296875,
+          "inicio": 6681.609999999637,
+          "fin": 7135.822000011103
+        },
+        {
+          "nombre": "0qaf987zfhhk5.js",
+          "tipo": "Script",
+          "kb": 6.994140625,
+          "inicio": 6730.450000002747,
+          "fin": 7178.776000015205
+        }
+      ]
+    },
+    "lcps": [
+      2264,
+      2488,
+      3080
+    ],
+    "fcps": [
+      2264,
+      2488,
+      3080
+    ]
+  }
+}

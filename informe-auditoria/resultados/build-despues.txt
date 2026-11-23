@@ -1,0 +1,53 @@
+
+> cafeteria-web@0.1.0 build
+> next build
+
+▲ Next.js 16.4.6 (Turbopack)
+- Environments: .env
+⚠ Warning: Next.js ignored package-lock.json in C:\Users\Lizeth because it is outside the current Git repository (C:\Users\Lizeth\Documents\Diseño wed 2\cafeteria-web).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.ts took 156ms
+- Cache Components enabled
+- Partial Prefetching enabled
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.2s
+  Running TypeScript ...
+  Finished TypeScript in 7.1s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/16) ...
+  Generating static pages using 11 workers (4/16) 
+  Generating static pages using 11 workers (8/16) 
+  Generating static pages using 11 workers (12/16) 
+✓ Generating static pages using 11 workers (16/16) in 3.6s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ◐ /
+├ ○ /_not-found
+├ ◐ /admin
+├ ○ /admin/login
+├ ◐ /admin/pedidos
+├ ƒ /api/admin/pedidos
+├ ƒ /api/admin/pedidos/[id]
+├ ƒ /api/admin/productos
+├ ƒ /api/admin/productos/[id]
+├ ƒ /api/auth
+├ ƒ /api/categorias
+├ ƒ /api/pedidos
+├ ƒ /api/productos
+├ ƒ /api/productos/[id]
+├ ○ /carrito
+├ ○ /icon.svg
+├ ◐ /menu
+└   /pedido/[codigo]
+  └ ◐ /pedido/[codigo]
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)             prerendered as static content
+◐  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+ƒ  (Dynamic)            server-rendered on demand
+

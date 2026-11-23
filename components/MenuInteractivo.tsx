@@ -95,7 +95,9 @@ export function MenuInteractivo({ productos, categorias }: Props) {
       {filtrados.length > 0 ? (
         <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {filtrados.map((p, i) => (
-            <TarjetaProducto key={p.id} producto={p} preload={i < 2} />
+            // WPO: la 1.ª foto es el LCP en móvil → prioridad alta; la 2.ª se pide
+            // de inmediato; las demás usan lazy loading.
+            <TarjetaProducto key={p.id} producto={p} prioridad={i === 0 ? "alta" : i === 1 ? "normal" : "diferida"} />
           ))}
         </div>
       ) : (

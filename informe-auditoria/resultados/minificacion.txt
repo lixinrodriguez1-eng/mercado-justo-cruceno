@@ -1,0 +1,6 @@
+> node medir-bundles.mjs despues
+Build: 23 archivos JS = 701.1 KB (226.7 KB con gzip) · 1 CSS = 44.4 KB (8.6 KB con gzip)
+> head -c 400 .next/static/chunks/3_hbnedeqc5a0.js
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,66849,(e,t,n)=>{"trimStart"in String.prototype||(String.prototype.trimStart=String.prototype.trimLeft),"trimEnd"in String.prototype||(String.prototype.trimEnd=String.prototype.trimRight),"description"in Symbol.prototype||Object.defineProperty(Symbol.prototype,"description",{configurable:
+> wc -l .next/static/chunks/3_hbnedeqc5a0.js   # saltos de línea en todo el archivo
+0

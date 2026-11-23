@@ -1,11 +1,11 @@
 "use client";
 // Botón "Agregar al carrito" con confirmación visual breve.
 import { useEffect, useState } from "react";
-import type { ProductoDTO } from "@/lib/tipos";
+import type { ProductoCarrito } from "@/lib/tipos";
 import { IconoCheck, IconoMas } from "../Iconos";
 import { MAX_POR_PRODUCTO, useCarrito } from "./CarritoProvider";
 
-export function BotonAgregar({ producto }: { producto: ProductoDTO }) {
+export function BotonAgregar({ producto }: { producto: ProductoCarrito }) {
   const { agregar, items } = useCarrito();
   const [agregado, setAgregado] = useState(false);
   const enCarrito = items.find((i) => i.productoId === producto.id)?.cantidad ?? 0;

@@ -13,6 +13,60 @@ const esObjeto = (v: unknown): v is Record<string, unknown> =>
 
 const texto = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
+// =============================================================
+// Seguridad (OWASP A05:2025 Injection – XSS almacenado, CWE-79)
+//
+// Los campos de texto libre (nombre del cliente, nota del pedido, nombre y
+// descripción del producto) se DESINFECTAN aquí, en el servidor, antes de
+// guardarse en MySQL. Así la base de datos solo contiene texto plano, aunque
+// alguien envíe HTML o JavaScript saltándose el formulario (Postman, curl…).
+//
+// React ya escapa el texto al mostrarlo; esta es una segunda capa (defensa
+// en profundidad) que también protege a otros sistemas que lean la base de
+// datos: phpMyAdmin, reportes, correos, exportaciones a Excel, etc.
+// =============================================================
+
+/** Entidades que podrían usarse para "esconder" etiquetas: &lt;script&gt; */
+const ENTIDADES: Record<string, string> = { lt: "<", gt: ">", quot: '"', apos: "'", amp: "&", sol: "/" };
+
+function decodificarEntidades(valor: string): string {
+  return valor.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);?/gi, (original, codigo: string) => {
+    const c = codigo.toLowerCase();
+    if (c.startsWith("#x")) return String.fromCodePoint(parseInt(c.slice(2), 16) || 0x20);
+    if (c.startsWith("#")) return String.fromCodePoint(Number(c.slice(1)) || 0x20);
+    return ENTIDADES[c] ?? original;
+  });
+}
+
+/**
+ * Convierte cualquier entrada en texto plano seguro:
+ * 1. Normaliza Unicode (NFKC) para que caracteres "disfrazados" como ＜ (U+FF1C)
+ *    se conviertan en < y también se eliminen.
+ * 2. Decodifica entidades HTML (&lt;, &#60;, &#x3c;) para no dejar etiquetas ocultas.
+ * 3. Elimina bloques peligrosos completos con su contenido (<script>…</script>,
+ *    <style>, <iframe>…). Si la etiqueta no se cierra, solo se quita la etiqueta.
+ * 4. Quita cualquier otra etiqueta HTML (<img onerror=…>, <a href=…>, <b>…).
+ * 5. Quita los caracteres < > ` y los de control, y neutraliza esquemas
+ *    ejecutables (javascript:, vbscript:, data:text/html).
+ * 6. Une los espacios repetidos (los saltos de línea solo si `multilinea`).
+ */
+export function limpiarTexto(valor: unknown, multilinea = false): string {
+  if (typeof valor !== "string") return "";
+  let limpio = decodificarEntidades(valor.normalize("NFKC"));
+  limpio = limpio
+    .replace(/<(script|style|iframe|object|embed|svg|math|template|noscript)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
+    .replace(/<\/?[a-z!?\/][^>]*(>|$)/gi, " ")
+    .replace(/[<>`]/g, "")
+    .replace(/\b(javascript|vbscript)\s*:/gi, "")
+    .replace(/\bdata\s*:\s*text\/html/gi, "")
+    // Caracteres de control e invisibles (ancho cero, BOM, separadores de línea Unicode)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|\p{Cf}|\p{Zl}|\p{Zp}/gu, "");
+  limpio = multilinea
+    ? limpio.replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n")
+    : limpio.replace(/\s+/g, " ");
+  return limpio.trim();
+}
+
 // ---------- Producto ----------
 export interface DatosProducto {
   nombre: string;
@@ -39,14 +93,15 @@ export function validarProducto(
   const debeValidar = (campo: string) => !parcial || campo in cuerpo;
 
   if (debeValidar("nombre")) {
-    const nombre = texto(cuerpo.nombre);
+    // Seguridad: se guarda solo texto plano (sin HTML ni scripts)
+    const nombre = limpiarTexto(cuerpo.nombre);
     if (nombre.length < 2 || nombre.length > 100)
       errores.nombre = "El nombre debe tener entre 2 y 100 caracteres.";
     else datos.nombre = nombre;
   }
 
   if (debeValidar("descripcion")) {
-    const descripcion = texto(cuerpo.descripcion);
+    const descripcion = limpiarTexto(cuerpo.descripcion, true);
     if (descripcion.length < 5 || descripcion.length > 1000)
       errores.descripcion = "La descripción debe tener entre 5 y 1000 caracteres.";
     else datos.descripcion = descripcion;
@@ -63,6 +118,8 @@ export function validarProducto(
 
   if (debeValidar("imagen")) {
     const imagen = texto(cuerpo.imagen);
+    // Seguridad: una URL válida nunca lleva espacios, comillas ni < > `
+    const caracteresInvalidos = /[\s"'<>`]/.test(imagen);
     const esRutaLocal = imagen.startsWith("/") && !imagen.startsWith("//");
     let esUrlSegura = false;
     try {
@@ -70,7 +127,7 @@ export function validarProducto(
     } catch {
       /* no es una URL */
     }
-    if (!imagen || imagen.length > 500 || !(esRutaLocal || esUrlSegura))
+    if (!imagen || imagen.length > 500 || caracteresInvalidos || !(esRutaLocal || esUrlSegura))
       errores.imagen = "La imagen debe ser una URL https:// o una ruta que empiece con /.";
     else datos.imagen = imagen;
   }
@@ -111,7 +168,8 @@ export function validarPedido(cuerpo: unknown): Resultado<DatosPedido> {
   if (!esObjeto(cuerpo)) return { ok: false, errores: { general: "Cuerpo inválido" } };
   const errores: Errores = {};
 
-  const cliente = texto(cuerpo.cliente);
+  // Seguridad: nombre y nota se desinfectan antes de validarse y guardarse
+  const cliente = limpiarTexto(cuerpo.cliente);
   if (cliente.length < 2 || cliente.length > 100)
     errores.cliente = "Ingresa tu nombre (entre 2 y 100 caracteres).";
   else if (!/^[\p{L}\s.'-]+$/u.test(cliente))
@@ -122,7 +180,7 @@ export function validarPedido(cuerpo: unknown): Resultado<DatosPedido> {
   if (!/^(\+?591)?[2-7]\d{7}$/.test(telefono))
     errores.telefono = "Ingresa un teléfono válido de 8 dígitos (ej. 71234567).";
 
-  const nota = texto(cuerpo.nota);
+  const nota = limpiarTexto(cuerpo.nota, true);
   if (nota.length > 255) errores.nota = "La nota puede tener como máximo 255 caracteres.";
 
   // Ítems: se agrupan por producto por si llegan repetidos
