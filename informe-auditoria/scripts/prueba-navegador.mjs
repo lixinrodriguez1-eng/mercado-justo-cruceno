@@ -147,16 +147,8 @@ await pagina.evaluate((lista, consola) => {
 }, bloqueos, mensajesConsola);
 await foto("csp-06-bloqueo-de-codigo-inyectado.png");
 
-// Clickjacking: un sitio ajeno intenta meter la tienda en un iframe
-const html = `<!doctype html><meta charset=utf-8><body style="font-family:sans-serif;padding:20px;background:#fee">
-<h2>Sitio del atacante (otro origen) intentando incrustar Café Chiquitano</h2>
-<iframe src="${base}/" style="width:900px;height:420px;border:3px dashed #b42318;background:#fff"></iframe>
-<p>frame-ancestors 'none' + X-Frame-Options: DENY → el navegador se niega a mostrarla.</p>`;
-const archivoAtacante = join(resultados, "sitio-atacante-iframe.html");
-writeFileSync(archivoAtacante, html);
-await pagina.goto(pathToFileURL(archivoAtacante).href, { waitUntil: "networkidle0" }).catch(() => {});
-await esperar(1500);
-await foto("csp-07-clickjacking-bloqueado.png");
+// Clickjacking: la figura (antes vs. después) se genera con captura-clickjacking.mjs,
+// que necesita las dos versiones encendidas (3006 original y 3005 protegida).
 
 // ---------- E. phpMyAdmin ----------
 const sql = (q) => `http://localhost/phpmyadmin/index.php?route=/sql&db=cafeteria_db&sql_query=${encodeURIComponent(q)}`;

@@ -564,11 +564,14 @@ figura("Panel de Administración: Producto Guardado sin Etiquetas", "xss-04-admi
        "El aviso confirma «Mocha XSS se creó correctamente». Los dos productos de prueba se dejaron como no disponibles para no alterar el menú público.")
 P("Para comprobar la CSP se simuló que un atacante ya había logrado inyectar código en la página: se intentó cargar un "
   "script externo, enviar las cookies a otro dominio con `fetch`, incrustar un iframe y un plugin. El navegador bloqueó los "
-  "cuatro intentos (Figura 8). También se intentó incrustar la tienda dentro de un sitio ajeno y el navegador se negó a "
-  "mostrarla (Figura 9).")
+  "cuatro intentos (Figura 8). Para el *clickjacking* se armó una página atacante, abierta desde otro origen, que intenta "
+  "incrustar la tienda en un iframe. Con la versión original (sin cabeceras) la tienda se muestra dentro del sitio ajeno, "
+  "así que un atacante podría taparla con botones falsos; con la versión protegida, que envía `frame-ancestors 'none'` y "
+  "`X-Frame-Options: DENY`, Chrome se niega a mostrarla y lo registra en la consola (Figura 9).")
 figura("Intentos de Código Inyectado Bloqueados por la CSP", "csp-06-bloqueo-de-codigo-inyectado.png", 6.0,
        "Los mensajes son los eventos `securitypolicyviolation` y los errores de consola reales registrados por Chrome, mostrados sobre la página.")
-figura("Intento de Clickjacking Bloqueado por frame-ancestors y X-Frame-Options", "csp-07-clickjacking-bloqueado.png", 5.2)
+figura("Intento de Clickjacking: la Versión Original se Deja Incrustar y la Protegida se Bloquea", "csp-07-clickjacking-bloqueado.png", 6.3,
+       "Las cabeceras mostradas debajo de cada iframe y el mensaje de la consola son los reales, leídos de las respuestas de cada versión y de Chrome.")
 H("Verificación en MySQL (phpMyAdmin)", 3)
 figura("Tabla pedidos en phpMyAdmin con los Datos de las Pruebas Limpios", "db-08-phpmyadmin-pedidos-limpios.png", 6.2)
 figura("Búsqueda de Etiquetas HTML en los Campos de Texto Libre", "db-10-phpmyadmin-busqueda-etiquetas.png", 6.2,

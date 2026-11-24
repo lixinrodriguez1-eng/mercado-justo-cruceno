@@ -143,7 +143,7 @@ function imagen(slide, archivo, x, y, w, h, extra = {}) {
     ["Fase 3 · XSS", 9, "Desinfección y ataques"],
     ["Fase 3 · CSP y BD", 11, "Cabeceras, MySQL, SQLi"],
     ["Fase 4 · Antes/después", 13, "Tabla y gráfico"],
-    ["ODS y conclusiones", 14, "Aporte y lecciones"],
+    ["Conclusiones", 14, "Lecciones aprendidas"],
   ];
   AGENDA.forEach(([t, dest, sub], i) => {
     const x = 0.5 + (i % 4) * 3.1, y = 1.5 + Math.floor(i / 4) * 2.55;
@@ -367,35 +367,10 @@ function imagen(slide, archivo, x, y, w, h, extra = {}) {
   s.addNotes("Esta es la tabla antes y después: mediana de nueve corridas en tres sesiones. Lo seguro es lo que no depende de la CPU: el peso del inicio y del menú bajó y las fotos pesan 22 % menos. El TBT bajó en la mediana, pero no en todas las sesiones, así que lo presentamos como tendencia. El carrito pesa 4 KB más por las cabeceras de seguridad. El LCP simulado en 3G supera los 2,5 segundos porque lo domina el JavaScript del framework; con la red 3G aplicada de verdad en Chrome el LCP del menú fue de unos 2,5 segundos.");
 
   // =========================================================
-  // 14. ODS
+  // 14. Conclusiones (la diapositiva de ODS se quitó a pedido del equipo;
+  //     los ODS siguen en el informe)
   // =========================================================
   pres.addSection({ title: "Cierre" });
-  s = pres.addSlide({ masterName: "Contenido", sectionTitle: "Cierre" });
-  s.addText("ODS vinculados y ejes transversales", { placeholder: "title" });
-  s.addText("⌂ Volver a la agenda", { x: 10.3, y: 7.0, w: 2.0, h: 0.3, fontSize: 9, color: C.accent1, underline: true, align: "right", margin: 0, isTextBox: true, hyperlink: { slide: 2 } });
-  const ODS = [
-    ["4", "C5192D", "Educación de calidad", "Auditoría documentada con scripts reproducibles, incluidos los errores, para que otros aprendan."],
-    ["8", "A21942", "Trabajo decente y crecimiento", "Una pyme que vende en línea de forma segura protege a sus clientes y su reputación."],
-    ["9", "FD6925", "Industria e innovación", "Buenas prácticas de la industria (Core Web Vitals, OWASP 2025, CSP) en una pyme local."],
-    ["10", "DD1367", "Reducción de desigualdades", "Optimizar para 3G ayuda a quien tiene mala señal o compra datos por megas."],
-  ];
-  ODS.forEach(([n, col, t, d], i) => {
-    const x = 0.5 + (i % 2) * 6.25, y = 1.45 + Math.floor(i / 2) * 2.15;
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: 6.0, h: 1.9, fill: { color: C.background2 }, rectRadius: 0.1, line: { type: "none" } });
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.25, y: y + 0.3, w: 1.2, h: 1.3, fill: { color: col }, rectRadius: 0.08, line: { type: "none" } });
-    s.addText([{ text: "ODS", options: { fontSize: 11, bold: true, breakLine: true } }, { text: n, options: { fontSize: 30, bold: true } }], { x: x + 0.25, y: y + 0.3, w: 1.2, h: 1.3, color: "FFFFFF", align: "center", valign: "middle", margin: 0, isTextBox: true });
-    s.addText(t, { x: x + 1.7, y: y + 0.28, w: 4.1, h: 0.45, fontFace: "Cambria", fontSize: 17, bold: true, color: C.text1, margin: 0, isTextBox: true });
-    s.addText(d, { x: x + 1.7, y: y + 0.78, w: 4.1, h: 0.95, fontSize: 13, color: C.text2, margin: 0, valign: "top", isTextBox: true });
-  });
-  s.addText([
-    { text: "Ejes transversales  ", options: { bold: true, color: C.accent1 } },
-    { text: "Tecnologías emergentes e IA · Emprendedurismo e innovación · Investigación en el aula · Responsabilidad social y ética (auditoría defensiva, solo en localhost)" },
-  ], { x: 0.5, y: 5.85, w: 12.3, h: 0.8, fontSize: 13, color: C.text2, margin: 0, isTextBox: true });
-  s.addNotes("Relacionamos el trabajo con los ODS 4, 8, 9 y 10. El 10 es el más directo: una tienda rápida en 3G es más accesible para quien tiene mala conexión.");
-
-  // =========================================================
-  // 15. Conclusiones
-  // =========================================================
   s = pres.addSlide({ masterName: "Oscuro", sectionTitle: "Cierre" });
   s.addImage({ path: ICONO, x: 0.7, y: 0.6, w: 0.5, h: 0.5 });
   s.addText("Conclusiones", { x: 0.7, y: 1.2, w: 8, h: 0.9, fontFace: "Cambria", fontSize: 38, bold: true, color: "FFFFFF", margin: 0, isTextBox: true });

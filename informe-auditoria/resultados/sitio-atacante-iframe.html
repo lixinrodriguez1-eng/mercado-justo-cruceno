@@ -1,4 +1,31 @@
-<!doctype html><meta charset=utf-8><body style="font-family:sans-serif;padding:20px;background:#fee">
-<h2>Sitio del atacante (otro origen) intentando incrustar Café Chiquitano</h2>
-<iframe src="http://localhost:3005/" style="width:900px;height:420px;border:3px dashed #b42318;background:#fff"></iframe>
-<p>frame-ancestors 'none' + X-Frame-Options: DENY → el navegador se niega a mostrarla.</p>
+<!doctype html><meta charset="utf-8"><title>Sitio del atacante</title>
+<style>
+  body{margin:0;padding:22px 26px;background:#fdecea;font-family:Segoe UI,Arial,sans-serif;color:#2b1d16}
+  h1{font-size:21px;margin:0 0 4px} .sub{font-size:14px;color:#6b4f43;margin-bottom:16px}
+  .fila{display:flex;gap:22px} .col{flex:1}
+  .etq{color:#fff;font-weight:700;font-size:15px;padding:7px 12px;border-radius:8px 8px 0 0}
+  iframe{display:block;width:100%;height:430px;border:3px dashed #b42318;border-top:0;background:#fff;box-sizing:border-box}
+  .cab{font:12.5px/1.6 Consolas,monospace;background:#fff;border:1px solid #e3c9c3;border-radius:6px;padding:8px 10px;margin-top:10px}
+  .res{font-weight:700;font-size:15px;margin-top:8px}
+  .consola{margin-top:16px;background:#1e1e1e;color:#f48771;font:12.5px/1.5 Consolas,monospace;padding:12px 14px;border-radius:8px}
+  .consola b{color:#fff}
+</style>
+<h1>Sitio del atacante (otro origen) intentando incrustar Café Chiquitano en un iframe</h1>
+<div class="sub">Misma página atacante, dos versiones de la tienda: la original y la protegida.</div>
+<div class="fila">
+  
+  <div class="col">
+    <div class="etq" style="background:#b42318">ANTES · versión original (puerto 3006)</div>
+    <iframe src="http://localhost:3006/" title="ANTES · versión original (puerto 3006)"></iframe>
+    <div class="cab">X-Frame-Options: <b>(no se envía)</b><br>Content-Security-Policy: <b>(no se envía)</b></div>
+    <div class="res" style="color:#b42318">✗ La tienda se muestra dentro del sitio ajeno: clickjacking posible</div>
+  </div>
+  
+  <div class="col">
+    <div class="etq" style="background:#2e7d32">DESPUÉS · versión protegida (puerto 3005)</div>
+    <iframe src="http://localhost:3005/" title="DESPUÉS · versión protegida (puerto 3005)"></iframe>
+    <div class="cab">X-Frame-Options: <b>DENY</b><br>Content-Security-Policy: <b>frame-ancestors 'none'</b></div>
+    <div class="res" style="color:#2e7d32">✓ El navegador se niega a mostrarla: clickjacking bloqueado</div>
+  </div>
+</div>
+<div class="consola" id="consola"><b>Consola de Chrome</b><br>(esperando mensajes…)</div>
