@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Entregables académicos (scripts de informes y presentaciones), no son la app
+    "informe/**",
+    "informe-auditoria/**",
+    "informe-final/**",
   ]),
 ]);
 

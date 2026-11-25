@@ -1,13 +1,15 @@
 "use client";
 // =============================================================
-// Lista de pedidos del panel.
+// Lista de pedidos de los paneles.
+// - modo "emprendedor": solo SUS pedidos; cambia el estado con
+//   PATCH /api/panel/pedidos/:id
+// - modo "admin": pedidos de todos los emprendedores, solo lectura (supervisión)
 // - Filtro por estado
-// - Cambio de estado con PATCH /api/admin/pedidos/:id
-// - Se actualiza sola cada 20 s (GET /api/admin/pedidos) para ver pedidos nuevos
+// - Se actualiza sola cada 20 s para ver pedidos nuevos
 // =============================================================
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { pedirApi } from "@/lib/cliente-api";
-import { ETIQUETA_ESTADO, formatearFecha, formatearPrecio } from "@/lib/negocio";
+import { ETIQUETA_ESTADO, enlaceWhatsApp, formatearFecha, formatearPrecio, numeroPedido } from "@/lib/negocio";
 import { ESTADOS_PEDIDO, type EstadoPedido, type PedidoDTO } from "@/lib/tipos";
 import { EstadoBadge } from "../EstadoBadge";
 
@@ -23,7 +25,15 @@ const esHoy = (iso: string) => {
   return f(new Date(iso)) === f(new Date());
 };
 
-export function GestorPedidos({ pedidosIniciales }: { pedidosIniciales: PedidoDTO[] }) {
+export function GestorPedidos({
+  pedidosIniciales,
+  modo,
+}: {
+  pedidosIniciales: PedidoDTO[];
+  modo: "emprendedor" | "admin";
+}) {
+  const esAdmin = modo === "admin";
+  const api = esAdmin ? "/api/admin/pedidos" : "/api/panel/pedidos";
   const [pedidos, setPedidos] = useState(pedidosIniciales);
   const [filtro, setFiltro] = useState<EstadoPedido | "TODOS">("TODOS");
   const [ocupado, setOcupado] = useState<number | null>(null);
@@ -33,14 +43,14 @@ export function GestorPedidos({ pedidosIniciales }: { pedidosIniciales: PedidoDT
 
   const recargar = useCallback(async () => {
     setCargando(true);
-    const r = await pedirApi<PedidoDTO[]>("/api/admin/pedidos");
+    const r = await pedirApi<PedidoDTO[]>(api);
     setCargando(false);
     if (r.ok && r.datos) {
       setPedidos(r.datos);
       setActualizado(new Date());
       setError("");
     } else setError(r.error ?? "No se pudo actualizar la lista.");
-  }, []);
+  }, [api]);
 
   // Actualización automática solo mientras la pestaña está visible
   useEffect(() => {
@@ -53,7 +63,7 @@ export function GestorPedidos({ pedidosIniciales }: { pedidosIniciales: PedidoDT
   async function cambiarEstado(pedido: PedidoDTO, estado: EstadoPedido) {
     if (estado === pedido.estado) return;
     setOcupado(pedido.id);
-    const r = await pedirApi<PedidoDTO>(`/api/admin/pedidos/${pedido.id}`, {
+    const r = await pedirApi<PedidoDTO>(`${api}/${pedido.id}`, {
       method: "PATCH",
       body: JSON.stringify({ estado }),
     });
@@ -72,7 +82,7 @@ export function GestorPedidos({ pedidosIniciales }: { pedidosIniciales: PedidoDT
   }, [pedidos]);
 
   const deHoy = pedidos.filter((p) => esHoy(p.fecha));
-  const ventasHoy = deHoy.reduce((s, p) => s + p.total, 0);
+  const ventasHoy = deHoy.reduce((s, p) => s + p.montoProductor, 0);
   const visibles = filtro === "TODOS" ? pedidos : pedidos.filter((p) => p.estado === filtro);
 
   return (
@@ -81,7 +91,7 @@ export function GestorPedidos({ pedidosIniciales }: { pedidosIniciales: PedidoDT
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
           { n: String(deHoy.length), t: "Pedidos de hoy" },
-          { n: formatearPrecio(ventasHoy), t: "Ventas de hoy" },
+          { n: formatearPrecio(ventasHoy), t: esAdmin ? "Para productores hoy" : "Recibes hoy" },
           { n: String(conteo.PENDIENTE), t: "Pendientes" },
           { n: String(conteo.PREPARANDO), t: "En preparación" },
         ].map((c) => (
@@ -128,56 +138,99 @@ export function GestorPedidos({ pedidosIniciales }: { pedidosIniciales: PedidoDT
           {visibles.map((p) => {
             const siguiente = SIGUIENTE[p.estado];
             return (
-              <li key={p.id} className={`tarjeta flex flex-col p-5 ${p.estado === "PENDIENTE" ? "ring-2 ring-amber-300" : ""}`}>
+              <li
+                key={p.id}
+                className={`tarjeta flex flex-col p-5 ${p.estado === "PENDIENTE" ? "ring-2 ring-amber-300" : ""}`}
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-titulo text-xl font-bold tabular-nums">#{String(p.id).padStart(5, "0")}</p>
+                    <p className="font-titulo text-xl font-bold tabular-nums">#{numeroPedido(p.id)}</p>
+                    {esAdmin && <p className="text-sm font-bold text-acento-600">{p.emprendedor.emprendimiento}</p>}
                     <p className="text-sm text-cafe-600">{formatearFecha(p.fecha)}</p>
                   </div>
                   <EstadoBadge estado={p.estado} />
                 </div>
 
                 <p className="mt-3 font-bold">{p.cliente}</p>
-                <a href={`tel:${p.telefono}`} className="text-sm text-acento-600 underline-offset-2 hover:underline">
-                  {p.telefono}
-                </a>
+                {esAdmin ? (
+                  <p className="text-sm text-cafe-600">{p.telefono}</p>
+                ) : (
+                  <a
+                    href={enlaceWhatsApp(
+                      `591${p.telefono.replace(/^\+?591/, "")}`,
+                      `Hola ${p.cliente}, soy de ${p.emprendedor.emprendimiento}. Recibimos tu pedido #${numeroPedido(p.id)} en Mercado Justo Cruceño.`,
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-bold text-exito underline-offset-2 hover:underline"
+                  >
+                    {p.telefono} · Escribir por WhatsApp
+                  </a>
+                )}
 
                 <ul className="mt-3 space-y-1 border-t border-crema-200 pt-3 text-sm">
                   {p.detalles.map((d) => (
                     <li key={d.id} className="flex justify-between gap-3">
-                      <span><strong className="tabular-nums">{d.cantidad}×</strong> {d.nombreProducto}</span>
+                      <span>
+                        <strong className="tabular-nums">{d.cantidad}×</strong> {d.nombreProducto}
+                      </span>
                       <span className="tabular-nums">{formatearPrecio(d.subtotal)}</span>
                     </li>
                   ))}
                 </ul>
-                {p.nota && <p className="mt-2 rounded-lg bg-crema-100 p-2 text-sm"><strong>Nota:</strong> {p.nota}</p>}
+                {p.nota && (
+                  <p className="mt-2 rounded-lg bg-crema-100 p-2 text-sm">
+                    <strong>Nota:</strong> {p.nota}
+                  </p>
+                )}
 
-                <p className="mt-3 flex justify-between border-t border-crema-200 pt-3 font-extrabold">
-                  <span>Total</span>
-                  <span className="tabular-nums">{formatearPrecio(p.total)}</span>
-                </p>
-
-                <div className="mt-4 flex flex-1 items-end gap-2">
-                  <div className="flex-1">
-                    <label htmlFor={`estado-${p.id}`} className="sr-only">Estado del pedido {p.id}</label>
-                    <select
-                      id={`estado-${p.id}`}
-                      value={p.estado}
-                      disabled={ocupado === p.id}
-                      onChange={(e) => cambiarEstado(p, e.target.value as EstadoPedido)}
-                      className="campo mt-0 py-2"
-                    >
-                      {ESTADOS_PEDIDO.map((e) => (
-                        <option key={e} value={e}>{ETIQUETA_ESTADO[e]}</option>
-                      ))}
-                    </select>
+                <dl className="mt-3 space-y-0.5 border-t border-crema-200 pt-3 text-sm">
+                  <div className="flex justify-between text-base font-extrabold">
+                    <dt>Total</dt>
+                    <dd className="tabular-nums">{formatearPrecio(p.subtotal)}</dd>
                   </div>
-                  {siguiente && (
-                    <button type="button" disabled={ocupado === p.id} onClick={() => cambiarEstado(p, siguiente.estado)} className="btn-primario px-4">
-                      {siguiente.texto}
-                    </button>
-                  )}
-                </div>
+                  <div className="flex justify-between text-cafe-600">
+                    <dt>Comisión plataforma</dt>
+                    <dd className="tabular-nums">{formatearPrecio(p.comision)}</dd>
+                  </div>
+                  <div className="flex justify-between font-bold text-exito">
+                    <dt>{esAdmin ? "Recibe el productor" : "Recibes"}</dt>
+                    <dd className="tabular-nums">{formatearPrecio(p.montoProductor)}</dd>
+                  </div>
+                </dl>
+
+                {!esAdmin && (
+                  <div className="mt-4 flex flex-1 items-end gap-2">
+                    <div className="flex-1">
+                      <label htmlFor={`estado-${p.id}`} className="sr-only">
+                        Estado del pedido {p.id}
+                      </label>
+                      <select
+                        id={`estado-${p.id}`}
+                        value={p.estado}
+                        disabled={ocupado === p.id}
+                        onChange={(e) => cambiarEstado(p, e.target.value as EstadoPedido)}
+                        className="campo mt-0 py-2"
+                      >
+                        {ESTADOS_PEDIDO.map((e) => (
+                          <option key={e} value={e}>
+                            {ETIQUETA_ESTADO[e]}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {siguiente && (
+                      <button
+                        type="button"
+                        disabled={ocupado === p.id}
+                        onClick={() => cambiarEstado(p, siguiente.estado)}
+                        className="btn-primario px-4"
+                      >
+                        {siguiente.texto}
+                      </button>
+                    )}
+                  </div>
+                )}
               </li>
             );
           })}

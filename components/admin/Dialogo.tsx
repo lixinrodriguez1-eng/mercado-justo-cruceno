@@ -33,7 +33,12 @@ export function Dialogo({ abierto, titulo, onCerrar, children, ancho = "max-w-lg
         <h2 id="titulo-dialogo" className="text-xl font-bold">
           {titulo}
         </h2>
-        <button type="button" onClick={onCerrar} className="grid size-10 cursor-pointer place-items-center rounded-full hover:bg-crema-200" aria-label="Cerrar">
+        <button
+          type="button"
+          onClick={onCerrar}
+          className="grid size-10 cursor-pointer place-items-center rounded-full hover:bg-crema-200"
+          aria-label="Cerrar"
+        >
           <IconoCerrar className="size-5" />
         </button>
       </div>

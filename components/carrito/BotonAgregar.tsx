@@ -26,12 +26,12 @@ export function BotonAgregar({ producto }: { producto: ProductoCarrito }) {
         agregar(producto);
         setAgregado(true);
       }}
-      className="btn-primario mt-4 w-full"
+      className="btn-primario min-w-0 flex-1"
       aria-label={`Agregar ${producto.nombre} al carrito`}
     >
       {agregado ? <IconoCheck className="size-5" /> : <IconoMas />}
       <span aria-live="polite">
-        {agregado ? "¡Agregado!" : lleno ? "Máximo alcanzado" : enCarrito ? `Agregar (${enCarrito} en carrito)` : "Agregar"}
+        {agregado ? "¡Agregado!" : lleno ? "Máximo" : enCarrito ? `Agregar (${enCarrito})` : "Agregar"}
       </span>
     </button>
   );

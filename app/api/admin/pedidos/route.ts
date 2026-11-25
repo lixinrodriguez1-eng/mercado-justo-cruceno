@@ -1,4 +1,5 @@
-// GET /api/admin/pedidos?estado=PENDIENTE  →  lista de pedidos (requiere sesión)
+// GET /api/admin/pedidos?estado=PENDIENTE  →  pedidos de TODOS los emprendedores (requiere ADMIN)
+// El administrador supervisa; quien cambia el estado es cada emprendedor.
 import { NextResponse, type NextRequest } from "next/server";
 import { ErrorApi, manejarError } from "@/lib/api";
 import { obtenerPedidos } from "@/lib/datos";
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
     if (estado) {
       const validacion = validarEstado({ estado });
       if (!validacion.ok) throw new ErrorApi(400, validacion.errores.estado);
-      return NextResponse.json(await obtenerPedidos(validacion.datos.estado));
+      return NextResponse.json(await obtenerPedidos({ estado: validacion.datos.estado }));
     }
     return NextResponse.json(await obtenerPedidos());
   } catch (error) {

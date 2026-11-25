@@ -17,10 +17,10 @@ export async function pedirApi<T>(url: string, opciones: RequestInit = {}): Prom
       headers: { "Content-Type": "application/json", ...opciones.headers },
     });
 
-    // Sesión vencida: volvemos al login del panel. Se recarga la página
+    // Sesión vencida: volvemos al inicio de sesión. Se recarga la página
     // completa a propósito para descartar cualquier dato del panel en memoria.
-    if (respuesta.status === 401 && url.startsWith("/api/admin")) {
-      const login = new URL("/admin/login", window.location.origin);
+    if (respuesta.status === 401 && /^\/api\/(admin|panel)\//.test(url)) {
+      const login = new URL("/ingresar", window.location.origin);
       login.searchParams.set("desde", window.location.pathname);
       window.location.assign(login);
       return { ok: false, status: 401, error: "Sesión vencida." };

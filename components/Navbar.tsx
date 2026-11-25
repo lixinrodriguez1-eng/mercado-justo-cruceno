@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useCarrito } from "./carrito/CarritoProvider";
-import { IconoCarrito, IconoCerrar, IconoMenu, IconoTaza } from "./Iconos";
+import { IconoCarrito, IconoCerrar, IconoMenu, IconoTienda, IconoUsuario } from "./Iconos";
 
 const ENLACES = [
   { href: "/", texto: "Inicio" },
-  { href: "/menu", texto: "Menú" },
-  { href: "/#horarios", texto: "Horarios" },
-  { href: "/#compromiso", texto: "Compromiso" },
+  { href: "/catalogo", texto: "Catálogo" },
+  { href: "/emprendedores", texto: "Emprendedores" },
+  { href: "/registro", texto: "Vende aquí" },
 ];
 
 export function Navbar() {
@@ -32,9 +32,11 @@ export function Navbar() {
       <nav className="contenedor flex h-16 items-center justify-between gap-4" aria-label="Principal">
         <Link href="/" onClick={cerrar} className="flex items-center gap-2 text-cafe-800">
           <span className="grid size-9 place-items-center rounded-full bg-cafe-800 text-crema-100">
-            <IconoTaza className="size-5" />
+            <IconoTienda className="size-5" />
           </span>
-          <span className="font-titulo text-xl font-bold tracking-tight">Café Chiquitano</span>
+          <span className="font-titulo text-lg leading-none font-bold tracking-tight sm:text-xl">
+            Mercado Justo <span className="hidden text-acento-500 min-[430px]:inline">Cruceño</span>
+          </span>
         </Link>
 
         {/* Enlaces en escritorio */}
@@ -43,6 +45,14 @@ export function Navbar() {
         </ul>
 
         <div className="flex items-center gap-1">
+          <Link
+            href="/ingresar"
+            onClick={cerrar}
+            className="grid size-11 place-items-center rounded-full text-cafe-800 transition-colors duration-200 hover:bg-crema-200"
+            aria-label="Ingresar al panel (emprendedores y administración)"
+          >
+            <IconoUsuario className="size-6" />
+          </Link>
           <Link
             href="/carrito"
             onClick={cerrar}

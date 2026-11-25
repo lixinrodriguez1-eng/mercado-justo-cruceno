@@ -40,7 +40,7 @@ const cabecerasSeguridad = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   // Anti-clickjacking para navegadores antiguos (equivale a frame-ancestors)
   { key: "X-Frame-Options", value: "DENY" },
-  // Desactiva APIs del dispositivo que la cafetería no necesita
+  // Desactiva APIs del dispositivo que la plataforma no necesita
   {
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
@@ -53,6 +53,14 @@ const cabecerasSeguridad = [
 ];
 
 const nextConfig: NextConfig = {
+  // Rutas de la versión anterior (Café Chiquitano) → rutas de la plataforma
+  async redirects() {
+    return [
+      { source: "/menu", destination: "/catalogo", permanent: true },
+      { source: "/admin/login", destination: "/ingresar", permanent: true },
+    ];
+  },
+
   async headers() {
     return [
       // Páginas HTML y API: todas las cabeceras de seguridad

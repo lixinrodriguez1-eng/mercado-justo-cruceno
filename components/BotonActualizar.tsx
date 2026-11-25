@@ -7,7 +7,12 @@ export function BotonActualizar({ texto = "Actualizar estado" }: { texto?: strin
   const router = useRouter();
   const [pendiente, iniciar] = useTransition();
   return (
-    <button type="button" onClick={() => iniciar(() => router.refresh())} disabled={pendiente} className="btn-secundario">
+    <button
+      type="button"
+      onClick={() => iniciar(() => router.refresh())}
+      disabled={pendiente}
+      className="btn-secundario"
+    >
       {pendiente ? "Actualizando…" : texto}
     </button>
   );

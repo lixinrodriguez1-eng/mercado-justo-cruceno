@@ -1,166 +1,83 @@
-# ☕ Café Chiquitano — Tienda en línea
+# 🛒 Mercado Justo Cruceño — Plataforma de comercio justo
 
-Aplicación web ágil y responsiva para **Café Chiquitano**, una cafetería local (nombre ficticio) de
-Santa Cruz de la Sierra, Bolivia. Permite a los clientes ver el menú, armar un carrito y hacer su
-pedido en línea para recogerlo sin filas; el personal gestiona productos y pedidos desde un panel
-de administración.
+Plataforma web multivendedor (nombre ficticio) donde **microemprendedores de los barrios periurbanos de Santa Cruz
+de la Sierra** (Plan 3000, Villa 1ro de Mayo, Pampa de la Isla, Los Lotes…) publican su historia y sus productos y
+venden **directo al cliente, sin intermediarios y con 0 % de comisión**. Café Chiquitano, la tienda de las
+entregas anteriores, es ahora uno de sus seis emprendimientos.
 
-> Trabajo práctico de **Diseño Web 2 — UPDS**: *“Maquetación e Implementación de la Interfaz con un
-> Framework JS Ágil”*.
-
-## Aporte a los ODS
-
-| ODS | Cómo aporta el proyecto |
-| --- | --- |
-| **ODS 8 — Trabajo decente y crecimiento económico** | Un negocio local vende en línea y amplía su alcance sin intermediarios; el pedido anticipado ordena el trabajo de baristas y cocina. |
-| **ODS 9 — Industria, innovación e infraestructura** | Digitaliza el proceso de pedidos de una pyme con tecnologías web modernas, base de datos real y un panel de gestión. |
+> **Proyecto Socioformativo Integrador — Diseño Web II (UPDS).** *Plataforma Web Dinámica de Comercio Justo para la
+> Inclusión Digital de Microempresarios Periurbanos en Santa Cruz.* Personas, negocios y teléfonos son ficticios.
 
 ## Funcionalidades
 
-**Modo cliente**
+**Clientes (público)**
 
-1. **Inicio**: hero, productos destacados (leídos de MySQL), compromiso ODS, horarios con indicador “Abierto ahora / Cerrado” y ubicación.
-2. **Menú** (`/menu`): filtro por categoría y buscador reactivos, sin recargar la página.
-3. **Carrito** (`/carrito`): se guarda en el navegador (`localStorage`); el **formulario de pedido** lo registra en **MySQL**.
-4. **Confirmación** (`/pedido/<código>`): número de pedido, detalle, total, estado y enlace a WhatsApp.
+1. **Inicio** con cifras reales de la plataforma, “cómo funciona”, emprendedores, destacados y compromiso ODS 4, 8, 9 y 10.
+2. **Catálogo** (`/catalogo`) filtrable por **rubro, barrio y emprendedor** + buscador (filtros en la URL, sin recargar).
+3. **Página de cada emprendedor** (`/emprendedores/<slug>`): historia, barrio, WhatsApp directo y sus productos.
+4. **Comercio justo visible**: cada producto muestra cuánto recibe el productor (100 %) y un botón de WhatsApp.
+5. **Carrito multivendedor**: la compra se reparte en **un pedido por emprendedor**; la confirmación muestra a cada
+   uno con su desglose (comisión 0, recibe el productor), **QR de pago referencial** y WhatsApp para coordinar.
 
-**Modo administrador** (`/admin`, protegido con contraseña)
+**Emprendedor** (`/panel`, rol `EMPRENDEDOR`)
 
-5. **CRUD de productos**: crear, editar, eliminar y marcar disponible/destacado.
-6. **Pedidos** (`/admin/pedidos`): lista con filtro y cambio de estado `PENDIENTE → PREPARANDO → ENTREGADO`.
+6. **Registro** (`/registro`) con validación y desinfección XSS; la solicitud queda **pendiente** de aprobación.
+7. **Mis productos**: CRUD solo de los suyos. **Mis pedidos**: solo los suyos, con cambio de estado. **Mi perfil**.
+
+**Administración** (`/admin`, rol `ADMIN`)
+
+8. Aprobar / quitar aprobación / suspender emprendedores, ver pedidos de toda la plataforma y moderar productos.
+
+## Seguridad (OWASP Top 10:2025)
+
+| Riesgo | Medida |
+| --- | --- |
+| A01 Control de acceso | Roles en `proxy.ts` + verificación contra la BD en cada API; el `emprendedorId` sale de la sesión (anti-IDOR); anti-CSRF por cabecera `Origin` |
+| A02 Mala configuración | CSP, HSTS, X-Frame-Options, nosniff, Referrer/Permissions-Policy, sin `X-Powered-By` |
+| A04 Fallas criptográficas | Contraseñas con **bcrypt**; sesión con HMAC-SHA256 en cookie `httpOnly`, `SameSite=Lax`, `Secure` |
+| A05 Inyección | Consultas parametrizadas (Prisma), lista blanca de slugs, `limpiarTexto()` contra XSS almacenado |
+| A07 Autenticación | Bloqueo de 15 min tras 5 intentos fallidos (en MySQL), mismo mensaje y tiempo si el correo no existe |
 
 ## Tecnologías
 
 | Área | Tecnología |
 | --- | --- |
-| Framework | **Next.js 16** (App Router, Server Components, Cache Components) + **React 19** |
-| Lenguaje | **TypeScript** |
-| Estilos | **Tailwind CSS 4** (mobile-first) · Google Fonts: *Fraunces* (títulos) y *Nunito Sans* (texto) |
-| Base de datos | **MySQL / MariaDB** (XAMPP), base de datos `cafeteria_db` |
-| ORM | **Prisma 6** (esquema, migraciones y seed) |
-| Imágenes | `next/image` (AVIF/WebP) con fotos de Unsplash |
-
-## Estructura del proyecto
-
-```
-app/
-├── (tienda)/            # Modo cliente: inicio, menú, carrito, confirmación
-├── admin/               # Modo administrador: login, productos, pedidos
-├── api/                 # Rutas API (validación + manejo de errores)
-│   ├── productos/       # GET públicos
-│   ├── categorias/
-│   ├── pedidos/         # POST: guarda el pedido en MySQL
-│   ├── auth/            # login / logout del administrador
-│   └── admin/           # CRUD productos y estados de pedidos (requieren sesión)
-components/              # Componentes reutilizables (Navbar, TarjetaProducto, carrito, admin…)
-lib/                     # Prisma, acceso a datos, validación, autenticación, utilidades
-prisma/
-├── schema.prisma        # Modelos: Categoria, Producto, Pedido, DetallePedido
-├── migrations/          # Migraciones SQL
-└── seed.ts              # 3 categorías y 12 productos de ejemplo
-proxy.ts                 # Protege las páginas /admin (antes llamado "middleware")
-```
+| Framework | **Next.js 16** (App Router, Server Components, Cache Components/PPR) + **React 19** + TypeScript |
+| Estilos | **Tailwind CSS 4** (mobile-first), Fraunces + Nunito Sans |
+| Base de datos | **MySQL** — local: XAMPP · nube: **TiDB Cloud Starter** (compatible con MySQL) |
+| ORM | **Prisma 6** (esquema 3FN, migraciones y seed) |
+| Despliegue | **Vercel** (frontend + funciones) · GitHub |
+| Otros | bcryptjs, qrcode (QR referencial en SVG) |
 
 ## Modelo de datos
 
-- **Categoria** (`id`, `nombre`, `slug`) 1 ── N **Producto**
-- **Producto** (`nombre`, `descripcion`, `precio`, `imagen`, `disponible`, `destacado`, `categoriaId`)
-- **Pedido** (`codigo`, `cliente`, `telefono`, `nota`, `total`, `estado`, `fecha`) 1 ── N **DetallePedido**
-- **DetallePedido** (`pedidoId`, `productoId`, `nombreProducto`, `precioUnitario`, `cantidad`, `subtotal`)
+`usuarios` 1—1 `emprendedores` N—1 `rubros` / `barrios` · `emprendedores` 1—N `productos` ·
+`compras` 1—N `pedidos` (uno por emprendedor) 1—N `detalle_pedidos` N—1 `productos`.
 
-El total del pedido se calcula **en el servidor** con los precios de la base de datos (no se confía
-en los precios enviados por el navegador) y se guarda dentro de una transacción.
+## Puesta en marcha local
 
-## Cómo ejecutarlo
+```bash
+npm install
+cp .env.example .env          # ajusta DATABASE_URL, AUTH_SECRET y las contraseñas del seed
+npx prisma migrate deploy     # crea las tablas en mercado_justo_db
+npx prisma db seed            # 6 rubros, 8 barrios, 1 admin, 6 emprendedores, 31 productos
+npm run build && npm start    # http://localhost:3000
+```
 
-### Requisitos
+Cuentas de prueba: `admin@mercadojusto.test` y `cafechiquitano@mercadojusto.test` (y los otros 5 emprendedores
+`@mercadojusto.test`); las contraseñas son las de `SEED_ADMIN_PASSWORD` y `SEED_EMPRENDEDOR_PASSWORD`.
 
-- [Node.js](https://nodejs.org) 20 o superior
-- [XAMPP](https://www.apachefriends.org) (MySQL/MariaDB)
+## Despliegue
 
-### Pasos
+1. Base MySQL en **TiDB Cloud Starter** → `DATABASE_URL` con `?sslaccept=strict`.
+2. `npx prisma migrate deploy` y `npx prisma db seed` contra esa URL.
+3. Proyecto en **Vercel** importado desde GitHub con las variables `DATABASE_URL` y `AUTH_SECRET`.
 
-1. **Iniciar MySQL**: abrir el panel de XAMPP y pulsar **Start** en *MySQL*.
-2. **Crear la base de datos** `cafeteria_db` en phpMyAdmin (<http://localhost/phpmyadmin>)
-   con cotejamiento `utf8mb4_unicode_ci`. *(Opcional: Prisma la crea si no existe.)*
-3. **Configurar variables de entorno**: copiar `.env.example` como `.env` y ajustar los valores.
+## Pruebas
 
-   ```bash
-   copy .env.example .env      # Windows (cmd)
-   ```
+- `informe-final/scripts/prueba-funcional.mjs`: 36 casos funcionales y de seguridad (compra multivendedor, roles,
+  IDOR, CSRF, XSS, SQLi, fuerza bruta, cabeceras) contra cualquier URL.
+- `informe-final/scripts/lighthouse-3g.mjs`: Lighthouse móvil (perfil estándar y 3G estricto), 3 corridas, mediana.
+- `informe-final/scripts/capturas.mjs`: recorre y captura cada funcionalidad con Playwright.
 
-   | Variable | Descripción |
-   | --- | --- |
-   | `DATABASE_URL` | `mysql://root:@localhost:3306/cafeteria_db` (XAMPP: usuario `root`, sin contraseña) |
-   | `ADMIN_PASSWORD` | Contraseña para entrar a `/admin` |
-   | `AUTH_SECRET` | Cadena aleatoria de 16+ caracteres para firmar la sesión |
-
-4. **Instalar dependencias** (también genera el cliente de Prisma):
-
-   ```bash
-   npm install
-   ```
-
-5. **Crear las tablas** con las migraciones:
-
-   ```bash
-   npx prisma migrate dev
-   ```
-
-6. **Cargar los datos de ejemplo** (3 categorías y 12 productos):
-
-   ```bash
-   npx prisma db seed
-   ```
-
-7. **Iniciar el servidor de desarrollo**:
-
-   ```bash
-   npm run dev
-   ```
-
-   - Tienda: <http://localhost:3000>
-   - Panel de administración: <http://localhost:3000/admin>
-
-### Otros comandos
-
-| Comando | Uso |
-| --- | --- |
-| `npm run build` y `npm start` | Versión de producción (usar esta para medir con Lighthouse) |
-| `npm run lint` | Revisión de código con ESLint |
-| `npm run db:studio` | Abre Prisma Studio para ver las tablas |
-
-## Rutas API
-
-| Método | Ruta | Descripción |
-| --- | --- | --- |
-| GET | `/api/categorias` | Lista de categorías |
-| GET | `/api/productos?categoria=&q=&destacados=1` | Productos disponibles (con filtros) |
-| GET | `/api/productos/:id` | Detalle de un producto |
-| POST | `/api/pedidos` | Registra un pedido |
-| POST / DELETE | `/api/auth` | Inicia / cierra la sesión del administrador |
-| GET / POST | `/api/admin/productos` | Lista todos / crea un producto 🔒 |
-| PUT / PATCH / DELETE | `/api/admin/productos/:id` | Edita, cambia disponibilidad o elimina 🔒 |
-| GET | `/api/admin/pedidos?estado=` | Lista de pedidos 🔒 |
-| PATCH | `/api/admin/pedidos/:id` | Cambia el estado de un pedido 🔒 |
-
-Las rutas validan los datos y responden con códigos claros: `400` (JSON mal formado),
-`401` (sin sesión), `404` (no existe), `409` (producto no disponible), `422` (datos inválidos con
-detalle por campo) y `503` (MySQL apagado).
-
-## Diseño, accesibilidad y rendimiento
-
-- Paleta cálida café/crema con acento terracota; tarjetas con sombra suave.
-- Navbar *sticky* con menú hamburguesa en móvil.
-- Transiciones de 200 ms y soporte de `prefers-reduced-motion`.
-- Textos alternativos en imágenes, `label` en todos los campos, foco visible, enlace “Saltar al contenido” y contraste AA.
-- Imágenes optimizadas con `next/image`, fuentes con `next/font` y pre-renderizado parcial para una carga rápida en celulares.
-
-## Integrantes
-
-- Ismael Franco Ruíz
-- Lizeth Adela Rodríguez Padilla
-
-**Docente:** Ing. Pablo Moscoso Zeballos · **Materia:** Diseño Web II · **Universidad Privada Domingo Savio (UPDS)** · 2026
-
-El informe (APA 7), la presentación y las capturas de pantalla están en la carpeta [`informe/`](informe/).
+Las carpetas `informe/` e `informe-auditoria/` son entregas anteriores (Café Chiquitano y su auditoría WPO/OWASP).

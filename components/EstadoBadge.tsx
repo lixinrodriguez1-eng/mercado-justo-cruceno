@@ -10,7 +10,9 @@ const ESTILOS: Record<EstadoPedido, string> = {
 
 export function EstadoBadge({ estado }: { estado: EstadoPedido }) {
   return (
-    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-extrabold ring-1 ${ESTILOS[estado]}`}>
+    <span
+      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-extrabold ring-1 ${ESTILOS[estado]}`}
+    >
       {ETIQUETA_ESTADO[estado]}
     </span>
   );

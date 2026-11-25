@@ -1,15 +1,18 @@
 "use client";
 // =============================================================
-// CRUD de productos en el panel de administración.
-// - Crear / Editar: formulario en ventana modal (POST / PUT)
-// - Disponible / Destacado: interruptores con PATCH inmediato
-// - Eliminar: confirmación en modal (DELETE)
+// Gestión de productos, en dos modos:
+//  - "emprendedor" (/panel): CRUD completo de SUS productos
+//      Crear / Editar: formulario en ventana modal (POST / PUT)
+//      Disponible / Destacado: interruptores con PATCH inmediato
+//      Eliminar: confirmación en modal (DELETE)
+//  - "admin" (/admin/productos): moderación de TODOS los productos; solo
+//      puede ocultarlos o mostrarlos (el contenido lo edita su dueño).
 // =============================================================
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { pedirApi } from "@/lib/cliente-api";
 import { formatearPrecio } from "@/lib/negocio";
-import type { CategoriaDTO, ProductoDTO } from "@/lib/tipos";
+import type { ProductoDTO } from "@/lib/tipos";
 import { IconoBasura, IconoBuscar, IconoEditar, IconoMas } from "../Iconos";
 import { ImagenProducto } from "../ImagenProducto";
 import { Dialogo } from "./Dialogo";
@@ -17,23 +20,23 @@ import { Interruptor } from "./Interruptor";
 
 interface Props {
   productosIniciales: ProductoDTO[];
-  categorias: CategoriaDTO[];
+  modo: "emprendedor" | "admin";
 }
 
 type Aviso = { tipo: "ok" | "error"; texto: string } | null;
 
 // WPO – lazy loading con next/dynamic: el formulario (con su validación y
 // vista previa de imagen) va en un chunk aparte que solo se descarga cuando
-// el administrador abre "Nuevo producto" o "Editar". La lista carga antes.
-const FormularioProducto = dynamic(
-  () => import("./FormularioProducto").then((m) => m.FormularioProducto),
-  { loading: () => <p className="p-4 text-center text-cafe-600">Cargando formulario…</p> },
-);
+// el emprendedor abre "Nuevo producto" o "Editar". La lista carga antes.
+const FormularioProducto = dynamic(() => import("./FormularioProducto").then((m) => m.FormularioProducto), {
+  loading: () => <p className="p-4 text-center text-cafe-600">Cargando formulario…</p>,
+});
 
-export function GestorProductos({ productosIniciales, categorias }: Props) {
+export function GestorProductos({ productosIniciales, modo }: Props) {
+  const esAdmin = modo === "admin";
+  const api = esAdmin ? "/api/admin/productos" : "/api/panel/productos";
   const [productos, setProductos] = useState(productosIniciales);
   const [busqueda, setBusqueda] = useState("");
-  const [categoria, setCategoria] = useState("");
   const [editando, setEditando] = useState<ProductoDTO | "nuevo" | null>(null);
   const [eliminando, setEliminando] = useState<ProductoDTO | null>(null);
   const [ocupado, setOcupado] = useState<number | null>(null); // id en proceso
@@ -42,9 +45,9 @@ export function GestorProductos({ productosIniciales, categorias }: Props) {
   const visibles = useMemo(() => {
     const t = busqueda.trim().toLowerCase();
     return productos.filter(
-      (p) => (!categoria || String(p.categoriaId) === categoria) && (!t || p.nombre.toLowerCase().includes(t)),
+      (p) => !t || p.nombre.toLowerCase().includes(t) || p.emprendedor.emprendimiento.toLowerCase().includes(t),
     );
-  }, [productos, busqueda, categoria]);
+  }, [productos, busqueda]);
 
   const reemplazar = (p: ProductoDTO) => setProductos((lista) => lista.map((x) => (x.id === p.id ? p : x)));
 
@@ -52,7 +55,7 @@ export function GestorProductos({ productosIniciales, categorias }: Props) {
   async function alternar(p: ProductoDTO, campo: "disponible" | "destacado") {
     setOcupado(p.id);
     reemplazar({ ...p, [campo]: !p[campo] }); // actualización optimista
-    const r = await pedirApi<ProductoDTO>(`/api/admin/productos/${p.id}`, {
+    const r = await pedirApi<ProductoDTO>(`${api}/${p.id}`, {
       method: "PATCH",
       body: JSON.stringify({ [campo]: !p[campo] }),
     });
@@ -75,7 +78,7 @@ export function GestorProductos({ productosIniciales, categorias }: Props) {
     if (!eliminando) return;
     const p = eliminando;
     setOcupado(p.id);
-    const r = await pedirApi(`/api/admin/productos/${p.id}`, { method: "DELETE" });
+    const r = await pedirApi(`${api}/${p.id}`, { method: "DELETE" });
     setOcupado(null);
     setEliminando(null);
     if (r.ok) {
@@ -85,6 +88,7 @@ export function GestorProductos({ productosIniciales, categorias }: Props) {
   }
 
   const disponibles = productos.filter((p) => p.disponible).length;
+  const columnas = esAdmin ? "lg:grid-cols-[64px_1fr_110px_120px]" : "lg:grid-cols-[64px_1fr_110px_110px_110px_100px]";
 
   return (
     <div className="mt-6">
@@ -92,8 +96,8 @@ export function GestorProductos({ productosIniciales, categorias }: Props) {
       <div className="grid grid-cols-3 gap-3">
         {[
           { n: productos.length, t: "Productos" },
-          { n: disponibles, t: "Disponibles" },
-          { n: productos.length - disponibles, t: "Agotados" },
+          { n: disponibles, t: "Visibles" },
+          { n: productos.length - disponibles, t: esAdmin ? "Ocultos" : "Agotados" },
         ].map((c) => (
           <div key={c.t} className="tarjeta p-4">
             <p className="font-titulo text-3xl font-bold tabular-nums">{c.n}</p>
@@ -105,22 +109,24 @@ export function GestorProductos({ productosIniciales, categorias }: Props) {
       {/* Barra de herramientas */}
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="relative flex-1">
-          <label htmlFor="buscar-admin" className="etiqueta">Buscar</label>
+          <label htmlFor="buscar-admin" className="etiqueta">
+            Buscar
+          </label>
           <IconoBuscar className="pointer-events-none absolute bottom-3 left-3.5 size-5 text-cafe-500" />
-          <input id="buscar-admin" type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Nombre del producto" className="campo pl-11" />
+          <input
+            id="buscar-admin"
+            type="search"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            placeholder={esAdmin ? "Producto o emprendimiento" : "Nombre del producto"}
+            className="campo pl-11"
+          />
         </div>
-        <div className="sm:w-48">
-          <label htmlFor="filtro-categoria" className="etiqueta">Categoría</label>
-          <select id="filtro-categoria" value={categoria} onChange={(e) => setCategoria(e.target.value)} className="campo">
-            <option value="">Todas</option>
-            {categorias.map((c) => (
-              <option key={c.id} value={c.id}>{c.nombre}</option>
-            ))}
-          </select>
-        </div>
-        <button type="button" onClick={() => setEditando("nuevo")} className="btn-primario">
-          <IconoMas /> Nuevo producto
-        </button>
+        {!esAdmin && (
+          <button type="button" onClick={() => setEditando("nuevo")} className="btn-primario">
+            <IconoMas /> Nuevo producto
+          </button>
+        )}
       </div>
 
       {aviso && (
@@ -131,25 +137,43 @@ export function GestorProductos({ productosIniciales, categorias }: Props) {
           }`}
         >
           {aviso.texto}
-          <button type="button" onClick={() => setAviso(null)} className="cursor-pointer underline">Cerrar</button>
+          <button type="button" onClick={() => setAviso(null)} className="cursor-pointer underline">
+            Cerrar
+          </button>
         </div>
       )}
 
       {/* Lista: tarjetas en móvil, filas tipo tabla en escritorio */}
       <div className="tarjeta mt-4 overflow-hidden">
-        <div className="hidden grid-cols-[64px_1fr_110px_110px_110px_100px] gap-4 border-b border-crema-200 bg-crema-50 px-4 py-3 text-xs font-extrabold tracking-wider text-cafe-600 uppercase lg:grid">
-          <span>Foto</span><span>Producto</span><span>Precio</span><span>Disponible</span><span>Destacado</span><span className="text-right">Acciones</span>
+        <div
+          className={`hidden gap-4 border-b border-crema-200 bg-crema-50 px-4 py-3 text-xs font-extrabold tracking-wider text-cafe-600 uppercase lg:grid ${columnas}`}
+        >
+          <span>Foto</span>
+          <span>Producto</span>
+          <span>Precio</span>
+          {esAdmin ? (
+            <span>Visible</span>
+          ) : (
+            <>
+              <span>Disponible</span>
+              <span>Destacado</span>
+              <span className="text-right">Acciones</span>
+            </>
+          )}
         </div>
         <ul className="divide-y divide-crema-200">
           {visibles.map((p) => (
-            <li key={p.id} className={`grid grid-cols-[64px_1fr] items-center gap-x-4 gap-y-3 p-4 lg:grid-cols-[64px_1fr_110px_110px_110px_100px] ${p.disponible ? "" : "bg-crema-50"}`}>
+            <li
+              key={p.id}
+              className={`grid grid-cols-[64px_1fr] items-center gap-x-4 gap-y-3 p-4 ${columnas} ${p.disponible ? "" : "bg-crema-50"}`}
+            >
               <div className="relative size-16 overflow-hidden rounded-xl bg-crema-200">
                 <ImagenProducto src={p.imagen} alt="" sizes="64px" className={p.disponible ? "" : "grayscale"} />
               </div>
               <div className="min-w-0">
                 <p className="truncate font-bold">{p.nombre}</p>
                 <p className="text-sm text-cafe-600">
-                  {p.categoria.nombre}
+                  {esAdmin ? p.emprendedor.emprendimiento : p.emprendedor.rubro.nombre}
                   <span className="lg:hidden"> · {formatearPrecio(p.precio)}</span>
                 </p>
               </div>
@@ -158,58 +182,103 @@ export function GestorProductos({ productosIniciales, categorias }: Props) {
               {/* En móvil, interruptores y acciones ocupan una fila completa */}
               <div className="col-span-2 flex flex-wrap items-center justify-between gap-3 lg:contents">
                 <label className="flex items-center gap-2 text-sm font-semibold lg:block">
-                  <Interruptor activo={p.disponible} etiqueta={`Disponible: ${p.nombre}`} deshabilitado={ocupado === p.id} onCambiar={() => alternar(p, "disponible")} />
-                  <span className="lg:sr-only">Disponible</span>
+                  <Interruptor
+                    activo={p.disponible}
+                    etiqueta={`${esAdmin ? "Visible" : "Disponible"}: ${p.nombre}`}
+                    deshabilitado={ocupado === p.id}
+                    onCambiar={() => alternar(p, "disponible")}
+                  />
+                  <span className="lg:sr-only">{esAdmin ? "Visible en la tienda" : "Disponible"}</span>
                 </label>
-                <label className="flex items-center gap-2 text-sm font-semibold lg:block">
-                  <Interruptor activo={p.destacado} etiqueta={`Destacado: ${p.nombre}`} deshabilitado={ocupado === p.id} onCambiar={() => alternar(p, "destacado")} />
-                  <span className="lg:sr-only">Destacado</span>
-                </label>
-                <div className="flex gap-1 lg:justify-end">
-                  <button type="button" onClick={() => setEditando(p)} className="grid size-11 cursor-pointer place-items-center rounded-full text-cafe-700 hover:bg-crema-200" aria-label={`Editar ${p.nombre}`}>
-                    <IconoEditar />
-                  </button>
-                  <button type="button" onClick={() => setEliminando(p)} className="grid size-11 cursor-pointer place-items-center rounded-full text-error hover:bg-error/10" aria-label={`Eliminar ${p.nombre}`}>
-                    <IconoBasura />
-                  </button>
-                </div>
+                {!esAdmin && (
+                  <>
+                    <label className="flex items-center gap-2 text-sm font-semibold lg:block">
+                      <Interruptor
+                        activo={p.destacado}
+                        etiqueta={`Destacado: ${p.nombre}`}
+                        deshabilitado={ocupado === p.id}
+                        onCambiar={() => alternar(p, "destacado")}
+                      />
+                      <span className="lg:sr-only">Destacado</span>
+                    </label>
+                    <div className="flex gap-1 lg:justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setEditando(p)}
+                        className="grid size-11 cursor-pointer place-items-center rounded-full text-cafe-700 hover:bg-crema-200"
+                        aria-label={`Editar ${p.nombre}`}
+                      >
+                        <IconoEditar />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEliminando(p)}
+                        className="grid size-11 cursor-pointer place-items-center rounded-full text-error hover:bg-error/10"
+                        aria-label={`Eliminar ${p.nombre}`}
+                      >
+                        <IconoBasura />
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </li>
           ))}
         </ul>
-        {visibles.length === 0 && <p className="p-8 text-center text-cafe-600">No hay productos que coincidan.</p>}
+        {visibles.length === 0 && (
+          <p className="p-8 text-center text-cafe-600">
+            {productos.length
+              ? "No hay productos que coincidan."
+              : "Aún no tienes productos. Crea el primero con “Nuevo producto”."}
+          </p>
+        )}
       </div>
 
-      {/* Modal crear / editar */}
-      <Dialogo
-        abierto={editando !== null}
-        titulo={editando === "nuevo" ? "Nuevo producto" : "Editar producto"}
-        onCerrar={() => setEditando(null)}
-      >
-        <FormularioProducto
-          key={editando === "nuevo" ? "nuevo" : editando?.id}
-          producto={editando === "nuevo" ? null : editando}
-          categorias={categorias}
-          onGuardado={alGuardar}
-          onCancelar={() => setEditando(null)}
-        />
-      </Dialogo>
+      {!esAdmin && (
+        <>
+          {/* Modal crear / editar */}
+          <Dialogo
+            abierto={editando !== null}
+            titulo={editando === "nuevo" ? "Nuevo producto" : "Editar producto"}
+            onCerrar={() => setEditando(null)}
+          >
+            <FormularioProducto
+              key={editando === "nuevo" ? "nuevo" : editando?.id}
+              producto={editando === "nuevo" ? null : editando}
+              onGuardado={alGuardar}
+              onCancelar={() => setEditando(null)}
+            />
+          </Dialogo>
 
-      {/* Modal confirmar eliminación */}
-      <Dialogo abierto={eliminando !== null} titulo="Eliminar producto" onCerrar={() => setEliminando(null)} ancho="max-w-md">
-        <p>
-          ¿Seguro que quieres eliminar <strong>{eliminando?.nombre}</strong>? Esta acción no se puede deshacer.
-        </p>
-        <p className="mt-2 text-sm text-cafe-600">
-          Los pedidos anteriores conservan su detalle. Si solo está agotado, mejor desactiva “Disponible”.
-        </p>
-        <div className="mt-5 flex justify-end gap-2">
-          <button type="button" onClick={() => setEliminando(null)} className="btn-fantasma">Cancelar</button>
-          <button type="button" onClick={confirmarEliminar} disabled={ocupado !== null} className="btn bg-error text-white hover:bg-error/90">
-            Sí, eliminar
-          </button>
-        </div>
-      </Dialogo>
+          {/* Modal confirmar eliminación */}
+          <Dialogo
+            abierto={eliminando !== null}
+            titulo="Eliminar producto"
+            onCerrar={() => setEliminando(null)}
+            ancho="max-w-md"
+          >
+            <p>
+              ¿Seguro que quieres eliminar <strong>{eliminando?.nombre}</strong>? Esta acción no se puede deshacer.
+            </p>
+            <p className="mt-2 text-sm text-cafe-600">
+              Los pedidos anteriores conservan su detalle. Si solo está agotado, mejor desactiva “Disponible”.
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button type="button" onClick={() => setEliminando(null)} className="btn-fantasma">
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmarEliminar}
+                disabled={ocupado !== null}
+                className="btn bg-error text-white hover:bg-error/90"
+              >
+                Sí, eliminar
+              </button>
+            </div>
+          </Dialogo>
+        </>
+      )}
     </div>
   );
 }

@@ -1,6 +1,11 @@
 // =============================================================
-// Esquema de base de datos - Café Chiquitano
-// SGBD: MySQL / MariaDB (XAMPP) - base de datos "cafeteria_db"
+// Esquema de base de datos - Mercado Justo Cruceño
+// Plataforma multivendedor de comercio justo para microempresarios
+// de barrios periurbanos de Santa Cruz de la Sierra.
+// SGBD: MySQL 8 (local: XAMPP · nube: TiDB Cloud Starter, compatible con MySQL)
+// Normalizado hasta 3FN: rubros y barrios en tablas propias, los datos del
+// cliente viven una sola vez en "compras" y cada emprendedor ve solo sus
+// "pedidos" (una compra se reparte en un pedido por emprendedor).
 // =============================================================
 
 generator client {
@@ -12,6 +17,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Roles del sistema: ADMIN aprueba emprendedores; EMPRENDEDOR gestiona lo suyo
+enum Rol {
+  ADMIN
+  EMPRENDEDOR
+}
+
 // Estados posibles de un pedido (flujo: PENDIENTE -> PREPARANDO -> ENTREGADO)
 enum EstadoPedido {
   PENDIENTE
@@ -19,17 +30,73 @@ enum EstadoPedido {
   ENTREGADO
 }
 
-// Categorías del menú: Cafés, Postres, Salados
-model Categoria {
-  id        Int        @id @default(autoincrement())
-  nombre    String     @unique @db.VarChar(60)
-  slug      String     @unique @db.VarChar(60) // versión para URL: "cafes", "postres"...
-  productos Producto[]
+// Cuenta de acceso (administrador o emprendedor)
+model Usuario {
+  id               Int          @id @default(autoincrement())
+  email            String       @unique @db.VarChar(120)
+  nombre           String       @db.VarChar(100)
+  // Hash bcrypt (60 caracteres). La contraseña en texto plano nunca se guarda.
+  passwordHash     String       @db.VarChar(100)
+  rol              Rol          @default(EMPRENDEDOR)
+  activo           Boolean      @default(true)
+  // Defensa contra fuerza bruta (OWASP A07): 5 intentos fallidos → bloqueo de 15 min
+  intentosFallidos Int          @default(0)
+  bloqueadoHasta   DateTime?
+  creadoEn         DateTime     @default(now())
+  emprendedor      Emprendedor?
 
-  @@map("categorias")
+  @@map("usuarios")
 }
 
-// Productos que vende la cafetería
+// Rubro del emprendimiento: Gastronomía, Artesanía, Agroecológicos...
+model Rubro {
+  id            Int           @id @default(autoincrement())
+  nombre        String        @unique @db.VarChar(60)
+  slug          String        @unique @db.VarChar(60)
+  emprendedores Emprendedor[]
+
+  @@map("rubros")
+}
+
+// Barrio periurbano donde produce el emprendedor (Plan 3000, Villa 1ro de Mayo...)
+model Barrio {
+  id            Int           @id @default(autoincrement())
+  nombre        String        @unique @db.VarChar(80)
+  slug          String        @unique @db.VarChar(80)
+  zona          String        @db.VarChar(80) // referencia: "Distrito 8", "municipio de Warnes"
+  emprendedores Emprendedor[]
+
+  @@map("barrios")
+}
+
+// Microempresario/a y su emprendimiento (perfil público)
+model Emprendedor {
+  id             Int        @id @default(autoincrement())
+  slug           String     @unique @db.VarChar(80) // URL pública: /emprendedores/cafe-chiquitano
+  nombre         String     @db.VarChar(100)        // persona responsable
+  emprendimiento String     @db.VarChar(100)        // nombre comercial
+  historia       String     @db.Text
+  whatsapp       String     @db.VarChar(15)         // formato internacional sin "+": 5917XXXXXXX
+  foto           String?    @db.VarChar(500)        // URL https de una foto del taller o producto
+  aprobado       Boolean    @default(false)         // solo los aprobados aparecen en la tienda
+  aprobadoEn     DateTime?
+  rubroId        Int
+  rubro          Rubro      @relation(fields: [rubroId], references: [id])
+  barrioId       Int
+  barrio         Barrio     @relation(fields: [barrioId], references: [id])
+  usuarioId      Int        @unique
+  usuario        Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  productos      Producto[]
+  pedidos        Pedido[]
+  creadoEn       DateTime   @default(now())
+
+  @@index([rubroId])
+  @@index([barrioId])
+  @@index([aprobado])
+  @@map("emprendedores")
+}
+
+// Productos que ofrece cada emprendedor
 model Producto {
   id            Int             @id @default(autoincrement())
   nombre        String          @db.VarChar(100)
@@ -38,31 +105,50 @@ model Producto {
   imagen        String          @db.VarChar(500)   // URL de la imagen (Unsplash o /public)
   disponible    Boolean         @default(true)     // si es false, no se puede pedir
   destacado     Boolean         @default(false)    // se muestra en la página de inicio
-  categoriaId   Int
-  categoria     Categoria       @relation(fields: [categoriaId], references: [id])
+  emprendedorId Int
+  emprendedor   Emprendedor     @relation(fields: [emprendedorId], references: [id], onDelete: Cascade)
   detalles      DetallePedido[]
   creadoEn      DateTime        @default(now())
   actualizadoEn DateTime        @updatedAt
 
-  @@index([categoriaId])
+  @@index([emprendedorId])
   @@map("productos")
 }
 
-// Pedido realizado por un cliente desde la web
-model Pedido {
-  id       Int             @id @default(autoincrement())
+// Compra hecha por un cliente desde el carrito. Si el carrito tenía productos
+// de varios emprendedores, la compra se reparte en un pedido por emprendedor.
+model Compra {
+  id       Int      @id @default(autoincrement())
   // Código aleatorio para la URL de confirmación: así nadie puede
-  // ver pedidos ajenos cambiando un número en la dirección.
-  codigo   String          @unique @default(cuid()) @db.VarChar(30)
-  cliente  String          @db.VarChar(100)
-  telefono String          @db.VarChar(20)
-  nota     String?         @db.VarChar(255) // indicaciones opcionales ("sin azúcar")
-  total    Decimal         @db.Decimal(10, 2)
-  estado   EstadoPedido    @default(PENDIENTE)
-  fecha    DateTime        @default(now())
-  detalles DetallePedido[]
+  // ver compras ajenas cambiando un número en la dirección.
+  codigo   String   @unique @default(cuid()) @db.VarChar(30)
+  cliente  String   @db.VarChar(100)
+  telefono String   @db.VarChar(20)
+  nota     String?  @db.VarChar(255)
+  total    Decimal  @db.Decimal(10, 2)
+  fecha    DateTime @default(now())
+  pedidos  Pedido[]
 
-  @@index([estado])
+  @@map("compras")
+}
+
+// Pedido que recibe UN emprendedor (parte de una compra)
+model Pedido {
+  id             Int             @id @default(autoincrement())
+  compraId       Int
+  compra         Compra          @relation(fields: [compraId], references: [id], onDelete: Cascade)
+  emprendedorId  Int
+  emprendedor    Emprendedor     @relation(fields: [emprendedorId], references: [id])
+  subtotal       Decimal         @db.Decimal(10, 2)
+  // Comercio justo transparente: lo que cobra la plataforma y lo que recibe el productor
+  comision       Decimal         @default(0) @db.Decimal(10, 2)
+  montoProductor Decimal         @db.Decimal(10, 2)
+  estado         EstadoPedido    @default(PENDIENTE)
+  fecha          DateTime        @default(now())
+  detalles       DetallePedido[]
+
+  @@index([compraId])
+  @@index([emprendedorId, estado])
   @@map("pedidos")
 }
 
@@ -71,7 +157,7 @@ model DetallePedido {
   id             Int       @id @default(autoincrement())
   pedidoId       Int
   pedido         Pedido    @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
-  // Si el producto se elimina del menú, el historial del pedido se conserva
+  // Si el producto se elimina, el historial del pedido se conserva
   productoId     Int?
   producto       Producto? @relation(fields: [productoId], references: [id], onDelete: SetNull)
   nombreProducto String    @db.VarChar(100)    // copia del nombre al momento de comprar

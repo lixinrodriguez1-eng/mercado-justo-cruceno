@@ -1,20 +1,25 @@
-// Datos fijos del negocio (ficticio) y utilidades de formato.
+// Datos fijos de la plataforma (ficticia) y utilidades de formato.
 
-export const NEGOCIO = {
-  nombre: "Café Chiquitano",
-  lema: "Café de origen boliviano, hecho a mano en Santa Cruz",
-  direccion: "Calle Sucre #245, a dos cuadras de la Plaza 24 de Septiembre",
+export const PLATAFORMA = {
+  nombre: "Mercado Justo Cruceño",
+  lema: "Compra directo a emprendedores de los barrios de Santa Cruz",
   ciudad: "Santa Cruz de la Sierra, Bolivia",
-  telefono: "+591 70000000", // número ficticio
-  whatsapp: "59170000000",
 };
 
-// Horarios de atención (se muestran en el inicio y el pie de página)
-export const HORARIOS = [
-  { dias: "Lunes a viernes", horas: "07:00 – 21:00", desde: 7, hasta: 21, diasSemana: [1, 2, 3, 4, 5] },
-  { dias: "Sábados", horas: "08:00 – 22:00", desde: 8, hasta: 22, diasSemana: [6] },
-  { dias: "Domingos", horas: "08:00 – 14:00", desde: 8, hasta: 14, diasSemana: [0] },
-];
+// =============================================================
+// Comercio justo transparente.
+// La plataforma cobra 0 % de comisión: el productor recibe el 100 % del
+// precio. El valor vive en una sola constante para que, si algún día se
+// cobra una comisión baja (p. ej. 3 %), el cálculo y todos los textos que
+// la muestran (tarjetas, confirmación, paneles) cambien a la vez.
+// =============================================================
+export const COMISION_PORCENTAJE = 0;
+
+/** Desglose de un monto: cuánto se queda la plataforma y cuánto recibe el productor */
+export function desglosarMonto(monto: number) {
+  const comision = Math.round(monto * COMISION_PORCENTAJE) / 100;
+  return { comision, productor: Math.round((monto - comision) * 100) / 100 };
+}
 
 const formatoBs = new Intl.NumberFormat("es-BO", {
   style: "currency",
@@ -38,3 +43,20 @@ export const ETIQUETA_ESTADO = {
   PREPARANDO: "Preparando",
   ENTREGADO: "Entregado",
 } as const;
+
+/** Enlace de WhatsApp con un mensaje ya escrito */
+export const enlaceWhatsApp = (numero: string, mensaje: string) =>
+  `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+
+/** Número de pedido legible: 7 → "00007" */
+export const numeroPedido = (id: number) => String(id).padStart(5, "0");
+
+/** "Café Chiquitano" → "cafe-chiquitano" (para URLs) */
+export const crearSlug = (texto: string) =>
+  texto
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 70);

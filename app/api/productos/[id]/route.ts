@@ -1,7 +1,7 @@
 // GET /api/productos/:id  →  detalle de un producto (pública)
 import { NextResponse, type NextRequest } from "next/server";
 import { manejarError, respuestaError } from "@/lib/api";
-import { obtenerProducto } from "@/lib/datos";
+import { obtenerProductoPublico } from "@/lib/datos";
 import { idValido } from "@/lib/validacion";
 
 export async function GET(_request: NextRequest, ctx: RouteContext<"/api/productos/[id]">) {
@@ -9,8 +9,8 @@ export async function GET(_request: NextRequest, ctx: RouteContext<"/api/product
     const id = idValido((await ctx.params).id);
     if (!id) return respuestaError(400, "Id de producto inválido.");
 
-    const producto = await obtenerProducto(id);
-    if (!producto || !producto.disponible) return respuestaError(404, "Producto no encontrado.");
+    const producto = await obtenerProductoPublico(id);
+    if (!producto) return respuestaError(404, "Producto no encontrado.");
     return NextResponse.json(producto);
   } catch (error) {
     return manejarError(error);

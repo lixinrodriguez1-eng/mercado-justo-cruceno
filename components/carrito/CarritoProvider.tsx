@@ -11,7 +11,7 @@
 import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
 import type { ItemCarrito, ProductoCarrito } from "@/lib/tipos";
 
-const CLAVE_STORAGE = "cafe-chiquitano:carrito";
+const CLAVE_STORAGE = "mercado-justo:carrito";
 export const MAX_POR_PRODUCTO = 20; // mismo límite que valida el servidor
 const VACIO: ItemCarrito[] = [];
 
@@ -26,6 +26,7 @@ function leerGuardado(): ItemCarrito[] {
         typeof i?.nombre === "string" &&
         typeof i?.precio === "number" &&
         typeof i?.imagen === "string" &&
+        typeof i?.emprendimiento === "string" &&
         Number.isInteger(i?.cantidad) &&
         i.cantidad > 0,
     );
@@ -82,7 +83,14 @@ const acciones = {
         );
       return [
         ...items,
-        { productoId: producto.id, nombre: producto.nombre, precio: producto.precio, imagen: producto.imagen, cantidad: 1 },
+        {
+          productoId: producto.id,
+          nombre: producto.nombre,
+          precio: producto.precio,
+          imagen: producto.imagen,
+          emprendimiento: producto.emprendimiento,
+          cantidad: 1,
+        },
       ];
     });
   },
@@ -90,7 +98,9 @@ const acciones = {
     modificar((items) =>
       cantidad <= 0
         ? items.filter((i) => i.productoId !== productoId)
-        : items.map((i) => (i.productoId === productoId ? { ...i, cantidad: Math.min(cantidad, MAX_POR_PRODUCTO) } : i)),
+        : items.map((i) =>
+            i.productoId === productoId ? { ...i, cantidad: Math.min(cantidad, MAX_POR_PRODUCTO) } : i,
+          ),
     );
   },
   quitar(productoId: number) {
@@ -116,7 +126,11 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
   // En el servidor no existe localStorage: allí el carrito siempre está vacío
   const items = useSyncExternalStore(suscribir, obtenerItems, () => VACIO);
   // false durante el render del servidor / hidratación, true después
-  const listo = useSyncExternalStore(sinSuscripcion, () => true, () => false);
+  const listo = useSyncExternalStore(
+    sinSuscripcion,
+    () => true,
+    () => false,
+  );
 
   const valor = useMemo<ValorCarrito>(
     () => ({

@@ -8,8 +8,7 @@ import { ESTADOS_PEDIDO, type EstadoPedido } from "./tipos";
 export type Errores = Record<string, string>;
 export type Resultado<T> = { ok: true; datos: T } | { ok: false; errores: Errores };
 
-const esObjeto = (v: unknown): v is Record<string, unknown> =>
-  typeof v === "object" && v !== null && !Array.isArray(v);
+const esObjeto = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
 
 const texto = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
@@ -62,9 +61,28 @@ export function limpiarTexto(valor: unknown, multilinea = false): string {
     // Caracteres de control e invisibles (ancho cero, BOM, separadores de línea Unicode)
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|\p{Cf}|\p{Zl}|\p{Zp}/gu, "");
   limpio = multilinea
-    ? limpio.replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n")
+    ? limpio
+        .replace(/\r\n?/g, "\n")
+        .replace(/[ \t]+/g, " ")
+        .replace(/\n{3,}/g, "\n\n")
     : limpio.replace(/\s+/g, " ");
   return limpio.trim();
+}
+
+/**
+ * Valida una URL de imagen: solo https:// o una ruta local "/..." (nunca
+ * javascript:, data: ni http://). Una URL válida no lleva espacios, comillas
+ * ni < > `. Devuelve la URL limpia o null si no es segura.
+ */
+export function urlSegura(valor: unknown): string | null {
+  const url = texto(valor);
+  if (!url || url.length > 500 || /[\s"'<>`]/.test(url)) return null;
+  if (url.startsWith("/") && !url.startsWith("//")) return url;
+  try {
+    return new URL(url).protocol === "https:" ? url : null;
+  } catch {
+    return null;
+  }
 }
 
 // ---------- Producto ----------
@@ -75,17 +93,13 @@ export interface DatosProducto {
   imagen: string;
   disponible: boolean;
   destacado: boolean;
-  categoriaId: number;
 }
 
 /**
  * Valida un producto. Con `parcial = true` (edición rápida) solo se
  * validan los campos que vienen en el cuerpo de la petición.
  */
-export function validarProducto(
-  cuerpo: unknown,
-  parcial = false,
-): Resultado<Partial<DatosProducto>> {
+export function validarProducto(cuerpo: unknown, parcial = false): Resultado<Partial<DatosProducto>> {
   if (!esObjeto(cuerpo)) return { ok: false, errores: { general: "Cuerpo inválido" } };
 
   const errores: Errores = {};
@@ -95,8 +109,7 @@ export function validarProducto(
   if (debeValidar("nombre")) {
     // Seguridad: se guarda solo texto plano (sin HTML ni scripts)
     const nombre = limpiarTexto(cuerpo.nombre);
-    if (nombre.length < 2 || nombre.length > 100)
-      errores.nombre = "El nombre debe tener entre 2 y 100 caracteres.";
+    if (nombre.length < 2 || nombre.length > 100) errores.nombre = "El nombre debe tener entre 2 y 100 caracteres.";
     else datos.nombre = nombre;
   }
 
@@ -111,32 +124,14 @@ export function validarProducto(
     const precio = Number(cuerpo.precio);
     if (!Number.isFinite(precio) || precio <= 0 || precio > 10000)
       errores.precio = "El precio debe ser un número mayor a 0 y menor a 10 000.";
-    else if (Math.round(precio * 100) !== precio * 100)
-      errores.precio = "El precio admite como máximo 2 decimales.";
+    else if (Math.round(precio * 100) !== precio * 100) errores.precio = "El precio admite como máximo 2 decimales.";
     else datos.precio = precio;
   }
 
   if (debeValidar("imagen")) {
-    const imagen = texto(cuerpo.imagen);
-    // Seguridad: una URL válida nunca lleva espacios, comillas ni < > `
-    const caracteresInvalidos = /[\s"'<>`]/.test(imagen);
-    const esRutaLocal = imagen.startsWith("/") && !imagen.startsWith("//");
-    let esUrlSegura = false;
-    try {
-      esUrlSegura = new URL(imagen).protocol === "https:";
-    } catch {
-      /* no es una URL */
-    }
-    if (!imagen || imagen.length > 500 || caracteresInvalidos || !(esRutaLocal || esUrlSegura))
-      errores.imagen = "La imagen debe ser una URL https:// o una ruta que empiece con /.";
+    const imagen = urlSegura(cuerpo.imagen);
+    if (!imagen) errores.imagen = "La imagen debe ser una URL https:// o una ruta que empiece con /.";
     else datos.imagen = imagen;
-  }
-
-  if (debeValidar("categoriaId")) {
-    const categoriaId = Number(cuerpo.categoriaId);
-    if (!Number.isInteger(categoriaId) || categoriaId <= 0)
-      errores.categoriaId = "Selecciona una categoría.";
-    else datos.categoriaId = categoriaId;
   }
 
   for (const campo of ["disponible", "destacado"] as const) {
@@ -170,10 +165,8 @@ export function validarPedido(cuerpo: unknown): Resultado<DatosPedido> {
 
   // Seguridad: nombre y nota se desinfectan antes de validarse y guardarse
   const cliente = limpiarTexto(cuerpo.cliente);
-  if (cliente.length < 2 || cliente.length > 100)
-    errores.cliente = "Ingresa tu nombre (entre 2 y 100 caracteres).";
-  else if (!/^[\p{L}\s.'-]+$/u.test(cliente))
-    errores.cliente = "El nombre solo puede contener letras y espacios.";
+  if (cliente.length < 2 || cliente.length > 100) errores.cliente = "Ingresa tu nombre (entre 2 y 100 caracteres).";
+  else if (!/^[\p{L}\s.'-]+$/u.test(cliente)) errores.cliente = "El nombre solo puede contener letras y espacios.";
 
   // Teléfono boliviano: 8 dígitos (celular 6/7, fijo 2-4), con o sin +591
   const telefono = texto(cuerpo.telefono).replace(/[\s-]/g, "");
@@ -227,4 +220,110 @@ export function validarEstado(cuerpo: unknown): Resultado<{ estado: EstadoPedido
 export function idValido(valor: string): number | null {
   const id = Number(valor);
   return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+// ---------- Inicio de sesión ----------
+export function validarCredenciales(cuerpo: unknown): Resultado<{ email: string; password: string }> {
+  if (!esObjeto(cuerpo)) return { ok: false, errores: { general: "Cuerpo inválido" } };
+  const email = texto(cuerpo.email).toLowerCase();
+  const password = typeof cuerpo.password === "string" ? cuerpo.password : "";
+  // Límite de longitud: bcrypt solo usa 72 bytes y un texto enorme sería un ataque de DoS
+  if (!email || email.length > 120 || !password || password.length > 72)
+    return { ok: false, errores: { general: "Correo o contraseña incorrectos." } };
+  return { ok: true, datos: { email, password } };
+}
+
+// ---------- Registro y perfil del emprendedor ----------
+export interface DatosPerfil {
+  nombre: string;
+  emprendimiento: string;
+  historia: string;
+  whatsapp: string;
+  foto: string | null;
+  rubroId: number;
+  barrioId: number;
+}
+
+export interface DatosRegistro extends DatosPerfil {
+  email: string;
+  password: string;
+}
+
+const REGEX_EMAIL = /^[^\s@<>()[\]\,;:"]+@[^\s@<>()[\]\,;:"]+\.[a-z]{2,}$/i;
+
+/**
+ * Valida los datos públicos del emprendedor. Los textos libres (nombre,
+ * emprendimiento, historia) se desinfectan con limpiarTexto() antes de
+ * guardarse: son los que más se muestran en la tienda (XSS almacenado).
+ */
+export function validarPerfil(cuerpo: unknown): Resultado<DatosPerfil> {
+  if (!esObjeto(cuerpo)) return { ok: false, errores: { general: "Cuerpo inválido" } };
+  const errores: Errores = {};
+
+  const nombre = limpiarTexto(cuerpo.nombre);
+  if (nombre.length < 3 || nombre.length > 100) errores.nombre = "Ingresa tu nombre completo (3 a 100 caracteres).";
+  else if (!/^[\p{L}\s.'-]+$/u.test(nombre)) errores.nombre = "El nombre solo puede contener letras y espacios.";
+
+  const emprendimiento = limpiarTexto(cuerpo.emprendimiento);
+  if (emprendimiento.length < 3 || emprendimiento.length > 100)
+    errores.emprendimiento = "El nombre del emprendimiento debe tener entre 3 y 100 caracteres.";
+
+  const historia = limpiarTexto(cuerpo.historia, true);
+  if (historia.length < 40 || historia.length > 2000)
+    errores.historia = "Cuenta tu historia en 40 a 2000 caracteres: quién eres, qué haces y cómo lo haces.";
+
+  // WhatsApp boliviano: celular de 8 dígitos que empieza con 6 o 7 (se guarda con 591)
+  const digitos = texto(cuerpo.whatsapp).replace(/[\s()+-]/g, "");
+  const celular = digitos.startsWith("591") ? digitos.slice(3) : digitos;
+  if (!/^[67]\d{7}$/.test(celular)) errores.whatsapp = "Ingresa un celular boliviano de 8 dígitos (ej. 71234567).";
+
+  let foto: string | null = null;
+  if (texto(cuerpo.foto)) {
+    foto = urlSegura(cuerpo.foto);
+    if (!foto) errores.foto = "La foto debe ser una URL que empiece con https://";
+  }
+
+  const rubroId = Number(cuerpo.rubroId);
+  if (!Number.isInteger(rubroId) || rubroId <= 0) errores.rubroId = "Selecciona tu rubro.";
+  const barrioId = Number(cuerpo.barrioId);
+  if (!Number.isInteger(barrioId) || barrioId <= 0) errores.barrioId = "Selecciona tu barrio.";
+
+  if (Object.keys(errores).length) return { ok: false, errores };
+  return {
+    ok: true,
+    datos: { nombre, emprendimiento, historia, whatsapp: `591${celular}`, foto, rubroId, barrioId },
+  };
+}
+
+export function validarRegistro(cuerpo: unknown): Resultado<DatosRegistro> {
+  if (!esObjeto(cuerpo)) return { ok: false, errores: { general: "Cuerpo inválido" } };
+  const perfil = validarPerfil(cuerpo);
+  const errores: Errores = perfil.ok ? {} : { ...perfil.errores };
+
+  const email = texto(cuerpo.email).toLowerCase();
+  if (email.length > 120 || !REGEX_EMAIL.test(email)) errores.email = "Ingresa un correo electrónico válido.";
+
+  // Contraseña: mínimo 8 caracteres con letras y números (máx. 72: límite de bcrypt)
+  const password = typeof cuerpo.password === "string" ? cuerpo.password : "";
+  if (password.length < 8 || password.length > 72 || !/[a-zA-Z]/.test(password) || !/\d/.test(password))
+    errores.password = "La contraseña debe tener entre 8 y 72 caracteres, con letras y números.";
+
+  if (cuerpo.acepta !== true) errores.acepta = "Debes aceptar los principios de comercio justo.";
+
+  if (Object.keys(errores).length || !perfil.ok) return { ok: false, errores };
+  return { ok: true, datos: { ...perfil.datos, email, password } };
+}
+
+// ---------- Moderación (administrador) ----------
+export function validarModeracion(cuerpo: unknown): Resultado<{ aprobado?: boolean; activo?: boolean }> {
+  if (!esObjeto(cuerpo)) return { ok: false, errores: { general: "Cuerpo inválido" } };
+  const datos: { aprobado?: boolean; activo?: boolean } = {};
+  for (const campo of ["aprobado", "activo"] as const) {
+    if (campo in cuerpo) {
+      if (typeof cuerpo[campo] !== "boolean") return { ok: false, errores: { [campo]: "Debe ser verdadero o falso." } };
+      datos[campo] = cuerpo[campo] as boolean;
+    }
+  }
+  if (!Object.keys(datos).length) return { ok: false, errores: { general: "No se envió ningún cambio." } };
+  return { ok: true, datos };
 }

@@ -97,3 +97,46 @@ export const IconoHoja = ({ className = "size-6" }: P) => (
     <path d="M2 21c0-3 1.85-5.36 5.08-6" />
   </svg>
 );
+export const IconoTienda = ({ className = "size-6" }: P) => (
+  <svg {...base} className={className}>
+    <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+    <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
+    <path d="M2 7h20" />
+    <path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7" />
+  </svg>
+);
+export const IconoMensaje = ({ className = "size-5" }: P) => (
+  <svg {...base} className={className}>
+    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+  </svg>
+);
+export const IconoUsuario = ({ className = "size-5" }: P) => (
+  <svg {...base} className={className}>
+    <circle cx="12" cy="8" r="5" />
+    <path d="M20 21a8 8 0 0 0-16 0" />
+  </svg>
+);
+export const IconoEscudo = ({ className = "size-6" }: P) => (
+  <svg {...base} className={className}>
+    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+    <path d="m9 12 2 2 4-4" />
+  </svg>
+);
+export const IconoGrafico = ({ className = "size-6" }: P) => (
+  <svg {...base} className={className}>
+    <path d="M3 3v16a2 2 0 0 0 2 2h16" />
+    <path d="m19 9-5 5-4-4-3 3" />
+  </svg>
+);
+export const IconoLibro = ({ className = "size-6" }: P) => (
+  <svg {...base} className={className}>
+    <path d="M12 7v14" />
+    <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+  </svg>
+);
+export const IconoIgualdad = ({ className = "size-6" }: P) => (
+  <svg {...base} className={className}>
+    <path d="M5 9h14M5 15h14" />
+  </svg>
+);

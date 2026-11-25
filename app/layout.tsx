@@ -19,11 +19,11 @@ const nunito = Nunito_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Café Chiquitano · Cafetería artesanal en Santa Cruz",
-    template: "%s · Café Chiquitano",
+    default: "Mercado Justo Cruceño · Comercio justo de los barrios de Santa Cruz",
+    template: "%s · Mercado Justo Cruceño",
   },
   description:
-    "Cafetería artesanal en Santa Cruz de la Sierra. Café de origen boliviano, postres y salados. Haz tu pedido en línea y recógelo sin filas.",
+    "Plataforma de comercio justo: compra directo a microemprendedores de los barrios periurbanos de Santa Cruz de la Sierra. Sin intermediarios y con 0 % de comisión.",
 };
 
 export const viewport: Viewport = {

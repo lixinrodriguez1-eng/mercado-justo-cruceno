@@ -39,12 +39,13 @@ export function manejarError(error: unknown) {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     // Códigos de Prisma: https://www.prisma.io/docs/orm/reference/error-reference
     if (error.code === "P2025") return respuestaError(404, "El registro no existe.");
-    if (error.code === "P2003") return respuestaError(409, "La categoría o producto relacionado no existe.");
+    if (error.code === "P2003")
+      return respuestaError(409, "El registro relacionado no existe o tiene pedidos asociados.");
     if (error.code === "P2002") return respuestaError(409, "Ya existe un registro con esos datos.");
   }
   if (error instanceof Prisma.PrismaClientInitializationError) {
     console.error("[API] No se pudo conectar a MySQL:", error.message);
-    return respuestaError(503, "La base de datos no está disponible. ¿Está encendido MySQL en XAMPP?");
+    return respuestaError(503, "La base de datos no está disponible en este momento. Inténtalo en unos segundos.");
   }
 
   console.error("[API] Error inesperado:", error);
