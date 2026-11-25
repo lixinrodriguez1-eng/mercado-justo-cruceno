@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Arquitectura</title>
+<link rel="stylesheet" href="estilo.css">
+<style>
+  #lienzo { width: 1400px; height: 860px; }
+  .caja p { margin: 0; font-size: 13.5px; }
+  .caja ul { margin: 4px 0 0; padding-left: 18px; font-size: 13px; }
+  .zona { position: absolute; border: 2px dashed #b98e70; border-radius: 18px; }
+  .zona span { position: absolute; top: -13px; left: 18px; background: #fff; padding: 0 8px; font: 700 14px "Segoe UI"; color: #8a5a3c; }
+</style>
+</head>
+<body>
+<div id="lienzo">
+  <h1>Arquitectura de Mercado Justo Cruceño</h1>
+  <p class="sub">Aplicación Next.js 16 de tres capas desplegada en Vercel con base MySQL en TiDB Cloud Starter</p>
+
+  <div class="caja media" id="cliente" style="left:24px; top:130px; width:270px">
+    <h3>Cliente</h3>
+    <p>Navegador del celular o la PC</p>
+    <ul><li>Comprador (público)</li><li>Emprendedor (/panel)</li><li>Administrador (/admin)</li></ul>
+  </div>
+  <div class="caja verde" id="whatsapp" style="left:24px; top:360px; width:270px">
+    <h3>WhatsApp (wa.me)</h3>
+    <p>Contacto directo cliente ↔ productor, sin intermediario</p>
+  </div>
+  <div class="caja verde" id="unsplash" style="left:24px; top:520px; width:270px">
+    <h3>Unsplash (imágenes)</h3>
+    <p>Fotos optimizadas a AVIF/WebP por next/image</p>
+  </div>
+
+  <div class="zona" style="left:350px; top:110px; width:690px; height:600px"><span>Vercel (plan Hobby) · HTTPS · CDN global</span></div>
+
+  <div class="caja oscura" id="proxy" style="left:380px; top:140px; width:630px">
+    <h3>proxy.ts + next.config.ts (borde)</h3>
+    <p>Cabeceras de seguridad (CSP, HSTS, X-Frame-Options…) · control de acceso por rol a /admin y /panel · anti-CSRF por Origin en /api</p>
+  </div>
+  <div class="caja media" id="paginas" style="left:380px; top:270px; width:300px">
+    <h3>Páginas (React 19)</h3>
+    <ul><li>Server Components + PPR</li><li>Catálogo, emprendedores, carrito</li><li>Paneles admin y emprendedor</li><li>Client Components: carrito, filtros, gestores</li></ul>
+  </div>
+  <div class="caja media" id="api" style="left:710px; top:270px; width:300px">
+    <h3>Route Handlers /api</h3>
+    <ul><li>/api/productos · /api/pedidos</li><li>/api/registro · /api/auth</li><li>/api/panel/* (EMPRENDEDOR)</li><li>/api/admin/* (ADMIN)</li></ul>
+  </div>
+  <div class="caja acento" id="lib" style="left:380px; top:470px; width:630px">
+    <h3>Capa de servicios (lib/)</h3>
+    <p>datos.ts (consultas) · validacion.ts (limpiarTexto, XSS) · sesion.ts (roles) · contrasena.ts (bcrypt) · auth.ts (HMAC) · qr.ts · negocio.ts (comisión 0 %)</p>
+  </div>
+  <div class="caja oscura" id="prisma" style="left:380px; top:600px; width:630px">
+    <h3>Prisma ORM 6</h3>
+    <p>Consultas parametrizadas · transacciones · migraciones</p>
+  </div>
+
+  <div class="caja oscura" id="tidb" style="left:1100px; top:560px; width:270px">
+    <h3>TiDB Cloud Starter</h3>
+    <p>MySQL 8 compatible · AWS us-east-1 · conexión TLS (sslaccept=strict)</p>
+    <ul><li>8 tablas en 3FN</li></ul>
+  </div>
+  <div class="caja media" id="github" style="left:1100px; top:140px; width:270px">
+    <h3>GitHub</h3>
+    <p>Repositorio del código (sin .env). Cada push dispara un nuevo despliegue.</p>
+  </div>
+  <div class="caja media" id="local" style="left:1100px; top:340px; width:270px">
+    <h3>Desarrollo local</h3>
+    <p>XAMPP (MariaDB) · next dev · pruebas y Lighthouse</p>
+  </div>
+  <p class="leyenda" style="left:24px; top:760px; width:1300px">Flechas continuas: peticiones HTTPS. Punteadas: enlaces externos o flujo de despliegue.</p>
+</div>
+<script src="conectores.js"></script>
+<script>
+  prepararSvg();
+  conectar("cliente", "derecha:0.3", "proxy", "izquierda:0.5", { flecha: true, texto: "HTTPS" });
+  conectar("cliente", "abajo:0.5", "whatsapp", "arriba:0.5", { flecha: true, punteada: true });
+  conectar("paginas", "izquierda:0.85", "unsplash", "derecha:0.4", { flecha: true, punteada: true });
+  conectar("proxy", "abajo:0.25", "paginas", "arriba:0.5", { flecha: true });
+  conectar("proxy", "abajo:0.77", "api", "arriba:0.5", { flecha: true });
+  conectar("paginas", "abajo:0.5", "lib", "arriba:0.25", { flecha: true });
+  conectar("api", "abajo:0.5", "lib", "arriba:0.77", { flecha: true });
+  conectar("lib", "abajo:0.5", "prisma", "arriba:0.5", { flecha: true });
+  conectar("prisma", "derecha:0.5", "tidb", "izquierda:0.6", { flecha: true, texto: "TLS :4000" });
+  conectar("github", "izquierda:0.5", "proxy", "derecha:0.3", { flecha: true, punteada: true, texto: "deploy" });
+  conectar("local", "arriba:0.5", "github", "abajo:0.5", { flecha: true, punteada: true, texto: "git push" });
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Modelo entidad-relación</title>
+<link rel="stylesheet" href="estilo.css">
+<style>#lienzo { width: 1400px; height: 1180px; }</style>
+</head>
+<body>
+<div id="lienzo">
+  <h1>Modelo entidad-relación — Mercado Justo Cruceño (MySQL, 3FN)</h1>
+  <p class="sub">8 tablas · <span class="pk">PK</span> clave primaria · <span class="fk">FK</span> clave foránea · UK única</p>
+
+  <div class="tabla" id="usuarios" style="left:24px; top:110px; width:370px">
+    <h2>usuarios</h2>
+    <ul>
+      <li><b><span class="pk">PK</span> id</b><i>INT</i></li>
+      <li><b>email (UK)</b><i>VARCHAR(120)</i></li>
+      <li><b>nombre</b><i>VARCHAR(100)</i></li>
+      <li><b>passwordHash</b><i>VARCHAR(100) bcrypt</i></li>
+      <li><b>rol</b><i>ENUM(ADMIN, EMPRENDEDOR)</i></li>
+      <li><b>activo</b><i>BOOLEAN</i></li>
+      <li><b>intentosFallidos</b><i>INT</i></li>
+      <li><b>bloqueadoHasta</b><i>DATETIME NULL</i></li>
+      <li><b>creadoEn</b><i>DATETIME</i></li>
+    </ul>
+  </div>
+
+  <div class="tabla" id="emprendedores" style="left:500px; top:110px; width:400px">
+    <h2>emprendedores</h2>
+    <ul>
+      <li><b><span class="pk">PK</span> id</b><i>INT</i></li>
+      <li><b>slug (UK)</b><i>VARCHAR(80)</i></li>
+      <li><b>nombre</b><i>VARCHAR(100)</i></li>
+      <li><b>emprendimiento</b><i>VARCHAR(100)</i></li>
+      <li><b>historia</b><i>TEXT</i></li>
+      <li><b>whatsapp</b><i>VARCHAR(15)</i></li>
+      <li><b>foto</b><i>VARCHAR(500) NULL</i></li>
+      <li><b>aprobado</b><i>BOOLEAN</i></li>
+      <li><b>aprobadoEn</b><i>DATETIME NULL</i></li>
+      <li><b><span class="fk">FK</span> rubroId</b><i>INT</i></li>
+      <li><b><span class="fk">FK</span> barrioId</b><i>INT</i></li>
+      <li><b><span class="fk">FK</span> usuarioId (UK)</b><i>INT</i></li>
+      <li><b>creadoEn</b><i>DATETIME</i></li>
+    </ul>
+  </div>
+
+  <div class="tabla" id="rubros" style="left:1010px; top:110px; width:340px">
+    <h2>rubros</h2>
+    <ul>
+      <li><b><span class="pk">PK</span> id</b><i>INT</i></li>
+      <li><b>nombre (UK)</b><i>VARCHAR(60)</i></li>
+      <li><b>slug (UK)</b><i>VARCHAR(60)</i></li>
+    </ul>
+  </div>
+
+  <div class="tabla" id="barrios" style="left:1010px; top:330px; width:340px">
+    <h2>barrios</h2>
+    <ul>
+      <li><b><span class="pk">PK</span> id</b><i>INT</i></li>
+      <li><b>nombre (UK)</b><i>VARCHAR(80)</i></li>
+      <li><b>slug (UK)</b><i>VARCHAR(80)</i></li>
+      <li><b>zona</b><i>VARCHAR(80)</i></li>
+    </ul>
+  </div>
+
+  <div class="tabla" id="productos" style="left:24px; top:640px; width:370px">
+    <h2>productos</h2>
+    <ul>
+      <li><b><span class="pk">PK</span> id</b><i>INT</i></li>
+      <li><b>nombre</b><i>VARCHAR(100)</i></li>
+      <li><b>descripcion</b><i>TEXT</i></li>
+      <li><b>precio</b><i>DECIMAL(10,2)</i></li>
+      <li><b>imagen</b><i>VARCHAR(500)</i></li>
+      <li><b>disponible</b><i>BOOLEAN</i></li>
+      <li><b>destacado</b><i>BOOLEAN</i></li>
+      <li><b><span class="fk">FK</span> emprendedorId</b><i>INT</i></li>
+      <li><b>creadoEn / actualizadoEn</b><i>DATETIME</i></li>
+    </ul>
+  </div>
+
+  <div class="tabla" id="pedidos" style="left:500px; top:640px; width:400px">
+    <h2>pedidos</h2>
+    <ul>
+      <li><b><span class="pk">PK</span> id</b><i>INT</i></li>
+      <li><b><span class="fk">FK</span> compraId</b><i>INT</i></li>
+      <li><b><span class="fk">FK</span> emprendedorId</b><i>INT</i></li>
+      <li><b>subtotal</b><i>DECIMAL(10,2)</i></li>
+      <li><b>comision</b><i>DECIMAL(10,2)</i></li>
+      <li><b>montoProductor</b><i>DECIMAL(10,2)</i></li>
+      <li><b>estado</b><i>ENUM(PENDIENTE, PREPARANDO, ENTREGADO)</i></li>
+      <li><b>fecha</b><i>DATETIME</i></li>
+    </ul>
+  </div>
+
+  <div class="tabla" id="compras" style="left:1010px; top:640px; width:340px">
+    <h2>compras</h2>
+    <ul>
+      <li><b><span class="pk">PK</span> id</b><i>INT</i></li>
+      <li><b>codigo (UK)</b><i>VARCHAR(30) cuid</i></li>
+      <li><b>cliente</b><i>VARCHAR(100)</i></li>
+      <li><b>telefono</b><i>VARCHAR(20)</i></li>
+      <li><b>nota</b><i>VARCHAR(255) NULL</i></li>
+      <li><b>total</b><i>DECIMAL(10,2)</i></li>
+      <li><b>fecha</b><i>DATETIME</i></li>
+    </ul>
+  </div>
+
+  <div class="tabla" id="detalle" style="left:500px; top:960px; width:400px">
+    <h2>detalle_pedidos</h2>
+    <ul>
+      <li><b><span class="pk">PK</span> id</b><i>INT</i></li>
+      <li><b><span class="fk">FK</span> pedidoId</b><i>INT</i></li>
+      <li><b><span class="fk">FK</span> productoId</b><i>INT NULL</i></li>
+      <li><b>nombreProducto · precioUnitario</b><i>copia al comprar</i></li>
+      <li><b>cantidad · subtotal</b><i>INT · DECIMAL</i></li>
+    </ul>
+  </div>
+</div>
+<script src="conectores.js"></script>
+<script>
+  prepararSvg();
+  conectar("usuarios", "derecha:0.25", "emprendedores", "izquierda:0.12", { a: "1", b: "0..1" });
+  conectar("rubros", "izquierda:0.5", "emprendedores", "derecha:0.72", { a: "1", b: "N" });
+  conectar("barrios", "izquierda:0.5", "emprendedores", "derecha:0.79", { a: "1", b: "N" });
+  conectar("emprendedores", "izquierda:0.9", "productos", "arriba:0.75", { a: "1", b: "N", texto: "ofrece" });
+  conectar("emprendedores", "abajo:0.5", "pedidos", "arriba:0.5", { a: "1", b: "N", texto: "recibe" });
+  conectar("compras", "izquierda:0.3", "pedidos", "derecha:0.3", { a: "1", b: "N" });
+  conectar("pedidos", "abajo:0.5", "detalle", "arriba:0.5", { a: "1", b: "N" });
+  conectar("productos", "abajo:0.5", "detalle", "izquierda:0.6", { a: "0..1", b: "N" });
+</script>
+</body>
+</html>

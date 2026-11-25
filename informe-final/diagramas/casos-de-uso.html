@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Casos de uso</title>
+<link rel="stylesheet" href="estilo.css">
+<style>
+  #lienzo { width: 1400px; height: 900px; }
+  .sistema { position: absolute; left: 300px; top: 100px; width: 800px; height: 770px; border: 2.5px solid #3d2618; border-radius: 16px; }
+  .sistema > b { position: absolute; top: 10px; left: 0; right: 0; text-align: center; font: 700 18px Cambria, Georgia, serif; }
+  .cu { position: absolute; width: 340px; padding: 10px 16px; border-radius: 999px; background: #f7efe3; border: 2px solid #b98e70; text-align: center; font-size: 14.5px; }
+  .cu.admin { background: #3d2618; color: #fdf9f3; border-color: #3d2618; }
+  .cu.emp { background: #fbe9df; border-color: #b9471c; }
+  .actor { position: absolute; width: 150px; text-align: center; font: 700 16px "Segoe UI"; }
+  .actor svg { display: block; margin: 0 auto 6px; }
+</style>
+</head>
+<body>
+<div id="lienzo">
+  <h1>Diagrama de casos de uso</h1>
+  <p class="sub">Tres actores: cliente (sin cuenta), emprendedor y administrador de la plataforma</p>
+
+  <div class="sistema"><b>Mercado Justo Cruceño</b></div>
+
+  <div class="actor" id="cliente" style="left:60px; top:240px">
+    <svg width="60" height="90" viewBox="0 0 60 90" fill="none" stroke="#3d2618" stroke-width="3"><circle cx="30" cy="14" r="11"/><path d="M30 25v32M8 38h44M30 57 12 86M30 57l18 29"/></svg>Cliente
+  </div>
+  <div class="actor" id="emprendedor" style="left:1200px; top:180px">
+    <svg width="60" height="90" viewBox="0 0 60 90" fill="none" stroke="#b9471c" stroke-width="3"><circle cx="30" cy="14" r="11"/><path d="M30 25v32M8 38h44M30 57 12 86M30 57l18 29"/></svg>Emprendedor
+  </div>
+  <div class="actor" id="admin" style="left:1200px; top:620px">
+    <svg width="60" height="90" viewBox="0 0 60 90" fill="none" stroke="#2b1a12" stroke-width="3"><circle cx="30" cy="14" r="11"/><path d="M30 25v32M8 38h44M30 57 12 86M30 57l18 29"/></svg>Administrador
+  </div>
+
+  <div class="cu" id="c1" style="left:330px; top:150px">CU01 Explorar y filtrar el catálogo (rubro, barrio, emprendedor)</div>
+  <div class="cu" id="c2" style="left:330px; top:220px">CU02 Conocer la historia del emprendedor</div>
+  <div class="cu" id="c3" style="left:330px; top:290px">CU03 Comprar (carrito multivendedor)</div>
+  <div class="cu" id="c4" style="left:330px; top:360px">CU04 Contactar por WhatsApp y pagar por QR</div>
+  <div class="cu" id="c5" style="left:330px; top:430px">CU05 Consultar el estado del pedido</div>
+
+  <div class="cu emp" id="e1" style="left:740px; top:150px">CU06 Registrar su emprendimiento</div>
+  <div class="cu emp" id="e0" style="left:740px; top:220px">CU07 Iniciar sesión (también el administrador)</div>
+  <div class="cu emp" id="e2" style="left:740px; top:290px">CU08 Gestionar SUS productos (CRUD)</div>
+  <div class="cu emp" id="e3" style="left:740px; top:360px">CU09 Atender SUS pedidos (estado)</div>
+  <div class="cu emp" id="e4" style="left:740px; top:430px">CU10 Editar su perfil público</div>
+
+  <div class="cu admin" id="a1" style="left:740px; top:560px">CU11 Aprobar o suspender emprendedores</div>
+  <div class="cu admin" id="a2" style="left:740px; top:630px">CU12 Supervisar todos los pedidos</div>
+  <div class="cu admin" id="a3" style="left:740px; top:700px">CU13 Moderar (ocultar) productos</div>
+  <div class="cu" id="inc" style="left:330px; top:630px; width:360px; background:#fff; border-style:dashed">«include» en CU03 y CU06–CU13:<br>validar y desinfectar datos en el servidor,<br>verificar sesión y rol</div>
+</div>
+<script src="conectores.js"></script>
+<script>
+  prepararSvg();
+  for (const id of ["c1", "c2", "c3", "c4", "c5"]) conectar("cliente", "derecha:0.4", id, "izquierda:0.5", {});
+  for (const id of ["e1", "e0", "e2", "e3", "e4"]) conectar("emprendedor", "izquierda:0.4", id, "derecha:0.5", {});
+  for (const id of ["a1", "a2", "a3"]) conectar("admin", "izquierda:0.4", id, "derecha:0.5", {});
+</script>
+</body>
+</html>
