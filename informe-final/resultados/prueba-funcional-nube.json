@@ -1,0 +1,227 @@
+{
+  "base": "https://mercado-justo-cruceno.vercel.app",
+  "fecha": "2026-11-26T06:18:40.126Z",
+  "segundos": 16,
+  "total": 36,
+  "pasan": 36,
+  "fallan": 0,
+  "compraDePrueba": "cmwx5vql30000kx07w3ra4fl1",
+  "resultados": [
+    {
+      "id": "F01",
+      "descripcion": "Catálogo público lista productos de varios emprendedores",
+      "resultado": "PASA",
+      "detalle": "31 productos, 6 emprendedores"
+    },
+    {
+      "id": "F02",
+      "descripcion": "Filtro por barrio (Plan 3000)",
+      "resultado": "PASA",
+      "detalle": "5 productos"
+    },
+    {
+      "id": "F03",
+      "descripcion": "Filtro por rubro (Artesanía)",
+      "resultado": "PASA",
+      "detalle": "5 productos"
+    },
+    {
+      "id": "F04",
+      "descripcion": "Filtro por emprendedor (Café Chiquitano)",
+      "resultado": "PASA",
+      "detalle": "8 productos"
+    },
+    {
+      "id": "F05",
+      "descripcion": "Página pública del emprendedor con su historia",
+      "resultado": "PASA",
+      "detalle": "HTTP 200"
+    },
+    {
+      "id": "F06",
+      "descripcion": "Compra con 2 emprendedores se reparte en 2 pedidos",
+      "resultado": "PASA",
+      "detalle": "HTTP 201, código cmwx5vql30000kx07w3ra4fl1"
+    },
+    {
+      "id": "F07",
+      "descripcion": "El servidor recalcula el total (ignora el precio enviado)",
+      "resultado": "PASA",
+      "detalle": "total 105 = esperado 105"
+    },
+    {
+      "id": "F08",
+      "descripcion": "Comercio justo: comisión 0 y productor recibe el 100 %",
+      "resultado": "PASA",
+      "detalle": "Café Chiquitano: Bs 90; Horno de Barro: Bs 15"
+    },
+    {
+      "id": "F09",
+      "descripcion": "Página de confirmación con QR referencial y WhatsApp por emprendedor",
+      "resultado": "PASA",
+      "detalle": "HTTP 200"
+    },
+    {
+      "id": "F10",
+      "descripcion": "Login del ADMIN (bcrypt) redirige a /admin",
+      "resultado": "PASA",
+      "detalle": ""
+    },
+    {
+      "id": "F11",
+      "descripcion": "Login del EMPRENDEDOR redirige a /panel",
+      "resultado": "PASA",
+      "detalle": ""
+    },
+    {
+      "id": "F12",
+      "descripcion": "El emprendedor ve SOLO sus pedidos",
+      "resultado": "PASA",
+      "detalle": "1 pedidos, todos de Café Chiquitano"
+    },
+    {
+      "id": "F13",
+      "descripcion": "El emprendedor cambia el estado de su pedido",
+      "resultado": "PASA",
+      "detalle": ""
+    },
+    {
+      "id": "F14",
+      "descripcion": "El ADMIN ve los pedidos de todos los emprendedores",
+      "resultado": "PASA",
+      "detalle": "2 pedidos"
+    },
+    {
+      "id": "F15",
+      "descripcion": "El emprendedor crea un producto (el dueño sale de la sesión, no del cuerpo)",
+      "resultado": "PASA",
+      "detalle": "HTTP 201"
+    },
+    {
+      "id": "S01",
+      "descripcion": "IDOR: otro emprendedor NO puede editar ese producto",
+      "resultado": "PASA",
+      "detalle": "HTTP 404"
+    },
+    {
+      "id": "S02",
+      "descripcion": "IDOR: otro emprendedor NO puede cambiar un pedido ajeno",
+      "resultado": "PASA",
+      "detalle": "HTTP 404"
+    },
+    {
+      "id": "F16",
+      "descripcion": "El emprendedor elimina su producto",
+      "resultado": "PASA",
+      "detalle": ""
+    },
+    {
+      "id": "S03",
+      "descripcion": "Un EMPRENDEDOR no accede a la API del ADMIN",
+      "resultado": "PASA",
+      "detalle": "HTTP 403"
+    },
+    {
+      "id": "S04",
+      "descripcion": "Un EMPRENDEDOR que abre /admin es enviado a su panel",
+      "resultado": "PASA",
+      "detalle": "HTTP 307 → /panel"
+    },
+    {
+      "id": "S05",
+      "descripcion": "Cookie manipulada (rol cambiado a ADMIN) es rechazada por la firma HMAC",
+      "resultado": "PASA",
+      "detalle": "HTTP 401"
+    },
+    {
+      "id": "S06",
+      "descripcion": "Sin sesión, la API del panel responde 401",
+      "resultado": "PASA",
+      "detalle": ""
+    },
+    {
+      "id": "S07",
+      "descripcion": "Registro con URL de foto javascript: es rechazado",
+      "resultado": "PASA",
+      "detalle": "HTTP 422: La foto debe ser una URL que empiece con https://"
+    },
+    {
+      "id": "F17",
+      "descripcion": "Registro de emprendedor crea la cuenta como PENDIENTE",
+      "resultado": "PASA",
+      "detalle": "HTTP 201"
+    },
+    {
+      "id": "S08",
+      "descripcion": "XSS almacenado: el servidor guarda solo texto plano",
+      "resultado": "PASA",
+      "detalle": "guardado: \"Tejidos mwx5vu6l\""
+    },
+    {
+      "id": "F18",
+      "descripcion": "Un emprendedor pendiente NO aparece en la tienda",
+      "resultado": "PASA",
+      "detalle": ""
+    },
+    {
+      "id": "F19",
+      "descripcion": "El ADMIN aprueba la solicitud y el emprendedor aparece en la tienda",
+      "resultado": "PASA",
+      "detalle": ""
+    },
+    {
+      "id": "S09",
+      "descripcion": "Al suspender la cuenta, su sesión abierta deja de servir al instante",
+      "resultado": "PASA",
+      "detalle": "HTTP 401"
+    },
+    {
+      "id": "S10",
+      "descripcion": "SQLi en el buscador (' OR '1'='1) no devuelve todo el catálogo",
+      "resultado": "PASA",
+      "detalle": "0 resultados"
+    },
+    {
+      "id": "S11",
+      "descripcion": "SQLi con UNION en el filtro se descarta (lista blanca de slug)",
+      "resultado": "PASA",
+      "detalle": "HTTP 200"
+    },
+    {
+      "id": "S12",
+      "descripcion": "SQLi en el inicio de sesión es rechazada",
+      "resultado": "PASA",
+      "detalle": "HTTP 401"
+    },
+    {
+      "id": "S13",
+      "descripcion": "CSRF: POST desde otro origen es rechazado (403)",
+      "resultado": "PASA",
+      "detalle": "HTTP 403"
+    },
+    {
+      "id": "S14",
+      "descripcion": "CSRF: aun con la cookie del ADMIN, otro origen no puede aprobar",
+      "resultado": "PASA",
+      "detalle": "HTTP 403"
+    },
+    {
+      "id": "S15",
+      "descripcion": "Mismo mensaje si el correo no existe (sin enumeración de usuarios)",
+      "resultado": "PASA",
+      "detalle": "Correo o contraseña incorrectos."
+    },
+    {
+      "id": "S16",
+      "descripcion": "Fuerza bruta: 5 intentos fallidos bloquean la cuenta 15 min",
+      "resultado": "PASA",
+      "detalle": "intento 5: HTTP 429; luego, con la contraseña correcta: HTTP 429"
+    },
+    {
+      "id": "S17",
+      "descripcion": "Cabeceras de seguridad presentes",
+      "resultado": "PASA",
+      "detalle": "6/6, sin X-Powered-By"
+    }
+  ]
+}

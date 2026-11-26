@@ -1,0 +1,7 @@
+# Entregables académicos: no forman parte de la app desplegada
+informe/
+informe-auditoria/
+informe-final/
+cap/
+.vscode/
+*.tsbuildinfo
