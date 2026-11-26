@@ -48,7 +48,8 @@ function imagen(slide, ruta, x, y, w, h, extra = {}) {
   pres.theme = { headFontFace: "Cambria", bodyFontFace: "Calibri" };
   const ICONO = path.join(REC, "icono-tienda.png");
   const QR = path.join(REC, "qr-url.png");
-  const sombra = { type: "outer", blur: 10, offset: 3, angle: 90, color: "000000", opacity: 0.25 };
+  // pptxgenjs modifica el objeto de sombra al usarlo (lo pasa a EMU): se crea uno nuevo en cada uso
+  const sombra = () => ({ type: "outer", blur: 10, offset: 3, angle: 90, color: "000000", opacity: 0.25 });
 
   pres.defineSlideMaster({
     title: "Contenido",
@@ -87,7 +88,7 @@ function imagen(slide, ruta, x, y, w, h, extra = {}) {
   const ENC = { bold: true, color: "FFFFFF", fill: { color: HEX.dk2 } };
   const c = (t, o = {}) => ({ text: String(t), options: o });
   function captura(s, archivo, x, y, w, h) {
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x - 0.05, y: y - 0.05, w: w + 0.1, h: h + 0.1, fill: { color: "FFFFFF" }, rectRadius: 0.05, line: { color: HEX.accent2, width: 1 }, shadow: sombra });
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x - 0.05, y: y - 0.05, w: w + 0.1, h: h + 0.1, fill: { color: "FFFFFF" }, rectRadius: 0.05, line: { color: HEX.accent2, width: 1 }, shadow: sombra() });
     imagen(s, path.join(CAP, archivo), x, y, w, h);
   }
 
@@ -105,7 +106,7 @@ function imagen(slide, ruta, x, y, w, h, extra = {}) {
     { text: "Santa Cruz de la Sierra · 26 de noviembre de 2026" },
   ], { x: 0.7, y: 4.4, w: 6, h: 1.4, fontSize: 13, color: "FFFFFF", margin: 0, paraSpaceAfter: 3, isTextBox: true });
   s.addText([{ text: URL.replace("https://", ""), options: { hyperlink: { url: URL }, color: HEX.accent5 } }], { x: 0.7, y: 6.15, w: 6.5, h: 0.4, fontSize: 15, bold: true, margin: 0, isTextBox: true });
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 7.45, y: 0.8, w: 5.35, h: 5.9, fill: { color: "FFFFFF" }, rectRadius: 0.12, line: { type: "none" }, shadow: sombra });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 7.45, y: 0.8, w: 5.35, h: 5.9, fill: { color: "FFFFFF" }, rectRadius: 0.12, line: { type: "none" }, shadow: sombra() });
   imagen(s, path.join(CAP, "24-movil-inicio.png"), 7.6, 0.95, 2.6, 5.6);
   imagen(s, QR, 10.35, 2.2, 2.3, 2.3, { hyperlink: { url: URL } });
   s.addText("Escanea y pruébala", { x: 10.2, y: 4.55, w: 2.6, h: 0.4, fontSize: 13, bold: true, color: HEX.dk1, align: "center", isTextBox: true });
@@ -299,7 +300,7 @@ function imagen(slide, ruta, x, y, w, h, extra = {}) {
     "Código: github.com/lixinrodriguez1-eng/mercado-justo-cruceno",
   ]), { x: 0.7, y: 2.8, w: 7.4, h: 3.0, fontSize: 15, color: HEX.lt2, valign: "top", paraSpaceAfter: 10, isTextBox: true });
   s.addText("Gracias · Ismael Franco Ruíz · Lizeth Adela Rodríguez Padilla", { x: 0.7, y: 6.3, w: 8, h: 0.4, fontSize: 13, color: HEX.accent2, margin: 0, isTextBox: true });
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.75, y: 1.0, w: 4.0, h: 4.75, fill: { color: "FFFFFF" }, rectRadius: 0.12, line: { type: "none" }, shadow: sombra });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.75, y: 1.0, w: 4.0, h: 4.75, fill: { color: "FFFFFF" }, rectRadius: 0.12, line: { type: "none" }, shadow: sombra() });
   imagen(s, QR, 9.0, 1.2, 3.5, 3.5, { hyperlink: { url: URL } });
   s.addText("Escanea con tu celular", { x: 8.75, y: 4.85, w: 4.0, h: 0.5, fontSize: 15, bold: true, color: HEX.dk1, align: "center", isTextBox: true });
   s.addNotes("Demostración en vivo: hacemos una compra a dos emprendedores, entramos como Café Chiquitano para cambiar el estado y como administrador para aprobar una solicitud. Las contraseñas de prueba se entregan aparte.");
