@@ -43,7 +43,7 @@ function imagen(slide, ruta, x, y, w, h, extra = {}) {
   const pres = new pptxgen();
   pres.layout = "LAYOUT_WIDE";
   pres.title = "Mercado Justo Cruceño – Proyecto Socioformativo Integrador";
-  pres.author = "Ismael Franco Ruíz; Lizeth Adela Rodríguez Padilla";
+  pres.author = "Jacqueline Ester Cáceres Subía; Lizeth Adela Rodríguez Padilla";
   pres.subject = "Diseño Web II – UPDS";
   pres.theme = { headFontFace: "Cambria", bodyFontFace: "Calibri" };
   const ICONO = path.join(REC, "icono-tienda.png");
@@ -100,7 +100,7 @@ function imagen(slide, ruta, x, y, w, h, extra = {}) {
   s.addText("Mercado Justo Cruceño", { x: 0.7, y: 1.85, w: 6.6, h: 1.0, fontFace: "Cambria", fontSize: 44, bold: true, color: "FFFFFF", margin: 0, isTextBox: true });
   s.addText("Plataforma Web Dinámica de Comercio Justo para la Inclusión Digital de Microempresarios Periurbanos en Santa Cruz", { x: 0.7, y: 2.9, w: 6.4, h: 1.1, fontSize: 17, color: HEX.lt2, margin: 0, isTextBox: true });
   s.addText([
-    { text: "Ismael Franco Ruíz", options: { bold: true, breakLine: true } },
+    { text: "Jacqueline Ester Cáceres Subía", options: { bold: true, breakLine: true } },
     { text: "Lizeth Adela Rodríguez Padilla", options: { bold: true, breakLine: true } },
     { text: "Docente: Ing. Álvaro Moscoso Zeballos", options: { breakLine: true } },
     { text: "Santa Cruz de la Sierra · 26 de noviembre de 2026" },
@@ -299,7 +299,7 @@ function imagen(slide, ruta, x, y, w, h, extra = {}) {
     "Administrador: admin@mercadojusto.test → aprueba una solicitud nueva",
     "Código: github.com/lixinrodriguez1-eng/mercado-justo-cruceno",
   ]), { x: 0.7, y: 2.8, w: 7.4, h: 3.0, fontSize: 15, color: HEX.lt2, valign: "top", paraSpaceAfter: 10, isTextBox: true });
-  s.addText("Gracias · Ismael Franco Ruíz · Lizeth Adela Rodríguez Padilla", { x: 0.7, y: 6.3, w: 8, h: 0.4, fontSize: 13, color: HEX.accent2, margin: 0, isTextBox: true });
+  s.addText("Gracias · Jacqueline Ester Cáceres Subía · Lizeth Adela Rodríguez Padilla", { x: 0.7, y: 6.3, w: 8, h: 0.4, fontSize: 13, color: HEX.accent2, margin: 0, isTextBox: true });
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.75, y: 1.0, w: 4.0, h: 4.75, fill: { color: "FFFFFF" }, rectRadius: 0.12, line: { type: "none" }, shadow: sombra() });
   imagen(s, QR, 9.0, 1.2, 3.5, 3.5, { hyperlink: { url: URL } });
   s.addText("Escanea con tu celular", { x: 8.75, y: 4.85, w: 4.0, h: 0.5, fontSize: 15, bold: true, color: HEX.dk1, align: "center", isTextBox: true });

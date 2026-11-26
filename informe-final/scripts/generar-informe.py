@@ -59,7 +59,7 @@ for hijo in list(cuerpo):
     if hijo.tag != qn("w:sectPr"):
         cuerpo.remove(hijo)
 doc.core_properties.title = "Plataforma Web Dinámica de Comercio Justo para la Inclusión Digital de Microempresarios Periurbanos en Santa Cruz"
-doc.core_properties.author = "Ismael Franco Ruíz; Lizeth Adela Rodríguez Padilla"
+doc.core_properties.author = "Jacqueline Ester Cáceres Subía; Lizeth Adela Rodríguez Padilla"
 doc.core_properties.subject = "Proyecto Socioformativo Integrador – Diseño Web II – UPDS"
 doc.core_properties.keywords = "comercio justo; inclusión digital; Next.js; MySQL; WPO; OWASP"
 
@@ -197,7 +197,7 @@ p.add_run("Plataforma Web Dinámica de Comercio Justo para la Inclusión Digital
           "Santa Cruz: Mercado Justo Cruceño").bold = True
 p = P("", sangria=False, centrado=True); p.paragraph_format.line_spacing = 1.0
 p.add_run().add_picture(str(REC / "icono-tienda.png"), width=Inches(1.3))
-for linea in ["Ismael Franco Ruíz", "Lizeth Adela Rodríguez Padilla",
+for linea in ["Jacqueline Ester Cáceres Subía", "Lizeth Adela Rodríguez Padilla",
               "Ingeniería de Sistemas, Universidad Privada Domingo Savio (UPDS)",
               "Diseño Web II", "Ing. Álvaro Moscoso Zeballos", "26 de noviembre de 2026"]:
     P(linea, sangria=False, centrado=True)
@@ -703,4 +703,4 @@ LH_CLI=.../lighthouse/cli/index.js node informe-final/scripts/lighthouse-3g.mjs 
 PW=.../playwright-core BASE=URL ADMIN_PASS=... EMP_PASS=... node informe-final/scripts/capturas.mjs capturas''')
 
 doc.save(str(SALIDA))
-print("✓", SALIDA)
+print("OK", SALIDA)
